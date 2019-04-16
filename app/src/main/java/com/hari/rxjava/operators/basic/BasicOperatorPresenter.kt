@@ -1,5 +1,8 @@
 package com.hari.rxjava.operators.basic
 
+/**
+ * @author Hari Hara Sudhan.N
+ */
 interface BasicOperatorPresenter {
     interface View {
         fun onSubscribe()

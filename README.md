@@ -103,7 +103,7 @@ onComplete
 |---|---|---|
 | Do not create the Observable <br/> until the observer subscribes | Creates the Observable when **just()** <br/> is called  | Do not create the Observable <br/> until the observer subscribes   |
 | Have our own custom functions| NA| NA|
-|Can use the same function for <br/> each observer||It creates a new Observable <br/> each time you get a new Observer|
+|It Can use the same observable for <br/> each observer|It Can use the same observable for <br/> each observer|It creates a new Observable <br/> each time you get a new Observer|
 
 
 
