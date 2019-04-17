@@ -1,6 +1,23 @@
 # Code ReactiveX 
 My coding journey with **RxJava+RxAndroid**
 
+## Reactivex?
+
+
+* ReactiveX is a programming model, where data flows emitted by one component (eg. Click Event) will be 
+processed by set of **RX Functions** which will pass the changes to 
+another component those are registered to receive the changed data.
+
+* In ReactiveX data flows are considered as streams which means continues flow without storing anything.
+
+* A Realtime Scenario: Consider the streams are the streets where cars are present but just passing by, 
+they are not really stored there. When we look to the street we only see the car just passing by. 
+This continuous observation that happens once the stream is defined. But streams can do more than that. 
+If the driver is a wanted criminal then the police might stop him, and the car basically gets filtered from the stream(filter function).
+
+
+* RX = Observer + iterator patterns + functional idioms
+
 ## Basic Operators
 
 #### Observable.create():
@@ -103,7 +120,7 @@ onComplete
 |---|---|---|
 | Do not create the Observable <br/> until the observer subscribes | Creates the Observable when **just()** <br/> is called  | Do not create the Observable <br/> until the observer subscribes   |
 | Have our own custom functions| NA| NA|
-|It Can use the same observable for <br/> each observer|It Can use the same observable for <br/> each observer|It creates a new Observable <br/> each time you get a new Observer|
+|It can use the same observable for <br/> each observer|It can use the same observable for <br/> each observer|It creates a new Observable <br/> each time you get a new Observer|
 
 
 
