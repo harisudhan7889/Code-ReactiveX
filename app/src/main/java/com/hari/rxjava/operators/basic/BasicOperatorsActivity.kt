@@ -53,6 +53,7 @@ class BasicOperatorsActivity : AppCompatActivity(),
         createButton.setOnClickListener(this)
         justButton.setOnClickListener(this)
         deferButton.setOnClickListener(this)
+        frombutton.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
@@ -68,6 +69,10 @@ class BasicOperatorsActivity : AppCompatActivity(),
             deferButton -> {
                 output.text = ""
                 presenter.defer()
+            }
+            frombutton -> {
+                output.text = ""
+                presenter.fromArray(createTextBox.text.toString())
             }
         }
     }

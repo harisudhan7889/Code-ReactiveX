@@ -18,7 +18,9 @@ If the driver is a wanted criminal then the police might stop him, and the car b
 
 * RX = Observer + iterator patterns + functional idioms
 
-## Basic Operators
+## Basic Operators:
+Through this operators we can create a basic observables, 
+so these operators will be coming under operator category of **Creating Observables**.
 
 #### Observable.create():
    
@@ -122,5 +124,30 @@ onComplete
 | Have our own custom functions| NA| NA|
 |It can use the same observable for <br/> each observer|It can use the same observable for <br/> each observer|It creates a new Observable <br/> each time you get a new Observer|
 
+#### Observable.fromArray(): 
 
+This operator creates an Observable with array of items as an input. The created Observable is capable
+of emitting each item one at a time.
 
+```
+val valueArray: Array<String> = arrayOf("A", "B", "C", "D", "E", "F")
+Observable.fromArray(*valueArray)
+                .subscribe(object : Observer<String?> {
+
+                    override fun onComplete() {
+                        Log.d("fromArray", "onComplete")
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        Log.d("fromArray", "onSubscribe")
+                    }
+
+                    override fun onNext(value: String) {
+                        Log.d("fromArray", "onNext $value")
+                    }
+
+                    override fun onError(error: Throwable) {
+                        Log.d("fromArray", "onError $error")
+                    }
+                })
+``` 

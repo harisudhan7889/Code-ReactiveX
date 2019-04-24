@@ -2,7 +2,7 @@
 <android.support.constraint.ConstraintLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="match_parent"
+        xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
         android:layout_height="match_parent">
 
 
@@ -24,7 +24,7 @@
             android:layout_marginTop="8dp"
             app:layout_constraintTop_toBottomOf="@+id/createTextBox" app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="8dp" app:layout_constraintEnd_toStartOf="@+id/justButton"
-            android:layout_marginEnd="8dp" app:layout_constraintHorizontal_bias="0.368"/>
+            android:layout_marginEnd="8dp" app:layout_constraintHorizontal_bias="0.017"/>
 
     <TextView
             android:id="@+id/output"
@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/justButton" android:layout_marginTop="8dp"
             app:layout_constraintTop_toBottomOf="@+id/createTextBox" app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="96dp"/>
+            android:layout_marginEnd="44dp"/>
     <Button
             android:text="Defer"
             android:layout_width="390dp"
@@ -49,6 +49,14 @@
             app:layout_constraintTop_toBottomOf="@+id/createButton" app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="8dp" app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="8dp" app:layout_constraintHorizontal_bias="0.498"/>
+    <Button
+            android:text="From"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/frombutton" app:layout_constraintStart_toEndOf="@+id/createButton"
+            android:layout_marginStart="8dp" app:layout_constraintEnd_toStartOf="@+id/justButton"
+            android:layout_marginEnd="8dp" android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/deferButton"/>
 
 
 </android.support.constraint.ConstraintLayout>

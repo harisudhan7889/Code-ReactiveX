@@ -5,6 +5,7 @@ import io.reactivex.Observable
 import io.reactivex.ObservableOnSubscribe
 import io.reactivex.Observer
 
+
 /**
  * @author Hari Hara Sudhan.N
  */
@@ -47,6 +48,15 @@ class BasicOperatorsPresenterImpl(private val observer: Observer<String?>) {
         val defer = Observable.defer { Observable.just(input) }
         input = "123"
         defer.subscribe(observer)
+    }
+
+
+    fun fromArray(input: String) {
+        if (input.isNotEmpty()) {
+            val valueArray: Array<String> = TextUtils.split(input, ",")
+            Observable.fromArray(*valueArray)
+                .subscribe(observer)
+        }
     }
 
 }
