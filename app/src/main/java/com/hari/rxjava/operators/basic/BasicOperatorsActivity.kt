@@ -56,6 +56,7 @@ class BasicOperatorsActivity : AppCompatActivity(),
         frombutton.setOnClickListener(this)
         fromCallable.setOnClickListener(this)
         fromIterable.setOnClickListener(this)
+        rangeButton.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
@@ -83,6 +84,12 @@ class BasicOperatorsActivity : AppCompatActivity(),
             fromIterable -> {
                 output.text = ""
                 presenter.fromIterable(createTextBox.text.toString())
+            }
+            rangeButton -> {
+                output.text = ""
+                if(startNo.text.isNotEmpty() && count.text.isNotEmpty()) {
+                    presenter.range(startNo.text.toString().toInt(), count.text.toString().toInt())
+                }
             }
         }
     }

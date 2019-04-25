@@ -8,6 +8,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.Callable
+import java.util.concurrent.Future
+import java.util.concurrent.TimeUnit
 
 
 /**
@@ -91,5 +93,27 @@ class BasicOperatorsPresenterImpl(private val observer: Observer<String?>) {
             Observable.fromIterable(list)
                 .subscribe(observer)
         }
+    }
+
+    fun range(startNo: Int, count: Int) {
+        Observable.range(startNo, count)
+            .subscribe(object : Observer<Int> {
+                override fun onComplete() {
+                    System.out.println("onComplete")
+                }
+
+                override fun onSubscribe(d: Disposable) {
+                    System.out.println("onSubscribe")
+                }
+
+                override fun onNext(value: Int) {
+                    System.out.println("onNext $value")
+                }
+
+                override fun onError(error: Throwable) {
+                    System.out.println("onError $error")
+                }
+
+            })
     }
 }

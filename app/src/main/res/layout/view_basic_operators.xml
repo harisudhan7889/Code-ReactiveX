@@ -73,6 +73,31 @@
             app:layout_constraintTop_toBottomOf="@+id/fromCallable" app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="8dp" app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="8dp"/>
+    <Button
+            android:text="Range"
+            android:layout_width="154dp"
+            android:layout_height="51dp"
+            android:id="@+id/rangeButton" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/fromIterable"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+            app:layout_constraintStart_toEndOf="@+id/count" android:layout_marginStart="8dp"/>
+    <EditText
+            android:layout_width="82dp"
+            android:layout_height="47dp"
+            android:inputType="number"
+            android:ems="10"
+            android:id="@+id/startNo"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/fromIterable"
+            android:hint="start no"/>
+    <EditText
+            android:layout_width="94dp"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:ems="10"
+            android:id="@+id/count" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/fromIterable" app:layout_constraintStart_toEndOf="@+id/startNo"
+            android:layout_marginStart="8dp" android:hint="count"/>
 
 
 </android.support.constraint.ConstraintLayout>

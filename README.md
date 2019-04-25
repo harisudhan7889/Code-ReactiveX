@@ -183,19 +183,19 @@ Observable.fromCallable(object : Callable<String> {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(object : Observer<String?> {
                 override fun onComplete() {
-                    Log.d("fromCallable", "onComplete")
+                    System.out.println("onComplete")
                 }
 
                 override fun onSubscribe(d: Disposable) {
-                    Log.d("fromCallable", "onSubscribe")
+                    System.out.println("onSubscribe")
                 }
 
                 override fun onNext(response: String) {
-                    Log.d("fromCallable", "onNext $response")
+                    System.out.println("onNext response")
                 }
 
-                override fun onError(e: Throwable) {
-                    Log.d("fromCallable", "onError $e")
+                override fun onError($error: Throwable) {
+                    System.out.println("onError $error")
                 }
             })
 ```
@@ -243,5 +243,43 @@ onNext C
 onNext D
 onNext E
 onNext F
+onComplete
+```
+#### Observable.range():
+This operator creates an Observable that emits a range of sequential integers. 
+The function takes two arguments: the starting number and length.
+
+The below sample creates an Observable using Observable.range() method. 
+The below has a starting number of 3 and a range of 5 numbers, so it will print values from 3 to 7.
+
+```
+Observable.range(3, 5)
+            .subscribe(object : Observer<Int> {
+                override fun onComplete() {
+                    System.out.println("onComplete")
+                }
+
+                override fun onSubscribe(d: Disposable) {
+                    System.out.println("onSubscribe")
+                }
+
+                override fun onNext(value: Int) {
+                    System.out.println("onNext $value")
+                }
+
+                override fun onError(error: Throwable) {
+                    System.out.println("onError $error")
+                }
+
+            })
+```
+**Output:**
+```
+onSubscribe
+onNext 3
+onNext 4
+onNext 5
+onNext 6
+onNext 7
 onComplete
 ```
