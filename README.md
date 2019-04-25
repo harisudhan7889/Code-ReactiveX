@@ -68,7 +68,7 @@ Observable.just(new String[]{"A", "B", "C", "D", "E", "F"})
                 .subscribe(new Observer<String[]>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-
+                        System.out.println("onSubscribe");
                     }
 
                     @Override
@@ -78,16 +78,21 @@ Observable.just(new String[]{"A", "B", "C", "D", "E", "F"})
 
                     @Override
                     public void onError(Throwable e) {
-
+                        System.out.println("onError $e");
                     }
 
                     @Override
                     public void onComplete() {
-
+                        System.out.println("onComplete");
                     }
                 });
 ```
-
+**Output:**
+```
+onSubscribe
+onNext: ABCDEF
+onComplete
+```
 **Actual Definition:** The Just operator converts an item into an Observable that emits that item.
 
 #### Observable.defer(): 
@@ -135,19 +140,108 @@ Observable.fromArray(*valueArray)
                 .subscribe(object : Observer<String?> {
 
                     override fun onComplete() {
-                        Log.d("fromArray", "onComplete")
+                        System.out.println("onComplete")
                     }
 
                     override fun onSubscribe(d: Disposable) {
-                        Log.d("fromArray", "onSubscribe")
+                        System.out.println("onSubscribe")
                     }
 
                     override fun onNext(value: String) {
-                        Log.d("fromArray", "onNext $value")
+                        System.out.println("onNext $value")
                     }
 
                     override fun onError(error: Throwable) {
-                        Log.d("fromArray", "onError $error")
+                        System.out.println("onError $error")
                     }
                 })
 ``` 
+**Output:**
+```
+onSubscribe
+onNext A
+onNext B
+onNext C
+onNext D
+onNext E
+onNext F
+onComplete
+```
+#### Observable.fromCallable():
+* This operator wraps up the expensive imperative code within it and change the imperative code to reactive.
+* Suppose you want to make an expensive call like a Network call, Database update, Write/Read file operation, etc. You cannot do these expensive calls in the main thread which will affect the usability of your application.
+  So to make these piece of imperative code asynchronous as well as a reactive one, wrap these expensive calls within Observable.fromCallable().
+* This method will not execute immediately, will execute only when a observer subscribe to it.
+
+```
+Observable.fromCallable(object : Callable<String> {
+            override fun call(): String {
+                return getUserDetailFromDB()
+            }
+        })
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(object : Observer<String?> {
+                override fun onComplete() {
+                    Log.d("fromCallable", "onComplete")
+                }
+
+                override fun onSubscribe(d: Disposable) {
+                    Log.d("fromCallable", "onSubscribe")
+                }
+
+                override fun onNext(response: String) {
+                    Log.d("fromCallable", "onNext $response")
+                }
+
+                override fun onError(e: Throwable) {
+                    Log.d("fromCallable", "onError $e")
+                }
+            })
+```
+##### At what situation you can use this operator?
+Imagine that you have a function. This function is developed before RxJava and cannot be changed. 
+But somehow you need a function which returns a `Observable<Object>`. In this scenario you can use Observable.fromCallable() operator.
+
+##### Difference between fromCallable() and defer()
+| fromCallable()| defer() |
+|---|---|
+|Exceptions will be handled by <br/>the operator itself| We have to handle exceptions <br/> by ourself |
+
+#### Observable.fromIterable():
+This operator is same as `Observable.fromArray()` but it creates an Observable with items of Iterable type as an input. The created Observable is capable
+of emitting each item one at a time.
+
+```
+val list = Arrays.asList("A","B","C","D","E","F")
+Observable.fromIterable(list)
+                .subscribe(object : Observer<String?> {
+
+                    override fun onComplete() {
+                        System.out.println("onComplete")
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        System.out.println("onSubscribe")
+                    }
+
+                    override fun onNext(value: String) {
+                        System.out.println("onNext $value")
+                    }
+
+                    override fun onError(error: Throwable) {
+                        System.out.println("onError $error")
+                    }
+                })
+```
+**Output:**
+```
+onSubscribe
+onNext A
+onNext B
+onNext C
+onNext D
+onNext E
+onNext F
+onComplete
+```

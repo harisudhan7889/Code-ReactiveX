@@ -4,6 +4,10 @@ import android.text.TextUtils
 import io.reactivex.Observable
 import io.reactivex.ObservableOnSubscribe
 import io.reactivex.Observer
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
+import java.util.concurrent.Callable
 
 
 /**
@@ -59,4 +63,33 @@ class BasicOperatorsPresenterImpl(private val observer: Observer<String?>) {
         }
     }
 
+    fun fromCallable() {
+        Observable.fromCallable(object : Callable<String> {
+            override fun call(): String {
+                return getUserDetailFromDB()
+            }
+        })
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(observer)
+    }
+
+    /*Time consuming task. This can be any Network call, DB updating call, etc*/
+    @Throws(InterruptedException::class)
+    fun getUserDetailFromDB(): String {
+        Thread.sleep(10000)
+        return "User1"
+    }
+
+    fun fromIterable(input: String) {
+        if (input.isNotEmpty()) {
+            val valueArray: Array<String> = TextUtils.split(input, ",")
+            val list = ArrayList<String>()
+            valueArray.forEach {
+                list.add(it)
+            }
+            Observable.fromIterable(list)
+                .subscribe(observer)
+        }
+    }
 }
