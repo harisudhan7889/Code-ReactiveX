@@ -19,10 +19,25 @@ If the driver is a wanted criminal then the police might stop him, and the car b
 * RX = Observer + iterator patterns + functional idioms
 
 ## Basic Operators:
-Through this operators we can create a basic observables, 
+Through these operators we can create a basic observables, 
 so these operators will be coming under operator category of **Creating Observables**.
 
-#### Observable.create():
+* [create](#create-operator)
+* [just](#just-operator)
+* [defer](#defer-operator)
+* [fromArray](#fromarray-operator)
+* [fromCallable](#fromcallable-operator)
+* [fromCallable](#fromcallable-operator)
+* [fromIterable](#fromiterable-operator)
+* [range](#range-operator)
+* [repeat](#repeat-operator)
+* [repeat With Count](#repeat-operator-with-count)
+* [repeatWhen](#repeatwhen-operator)
+* [repeatUntil](#repeatuntil-operator)
+* [interval](#interval-operator)
+* [timer](#timer-operator)
+
+#### create Operator
    
   Creates a observable which provides the control to you to play with your function. Since you have the control, you have to handle all the scenarios.
   ```
@@ -55,7 +70,7 @@ so these operators will be coming under operator category of **Creating Observab
   1. If you are more experienced and need a custom operator or listener.
   2. If you want to handle only specific exceptions rather than using a generic one. 
   
-#### Observable.just():
+#### just Operator
 
 This is the simple way to create a Observable. 
 Whatever data type object you give as an input to `just()`, 
@@ -95,7 +110,7 @@ onComplete
 ```
 **Actual Definition:** The Just operator converts an item into an Observable that emits that item.
 
-#### Observable.defer(): 
+#### defer Operator 
 
 Like **Observable.create()**, this operator does not create the Observable until the Observer subscribes 
 but doest not have any custom operators like **Observable.create()**. 
@@ -129,7 +144,7 @@ onComplete
 | Have our own custom functions| NA| NA|
 |It can use the same observable for <br/> each observer|It can use the same observable for <br/> each observer|It creates a new Observable <br/> each time you get a new Observer|
 
-#### Observable.fromArray(): 
+#### fromArray Operator 
 
 This operator creates an Observable with array of items as an input. The created Observable is capable
 of emitting each item one at a time.
@@ -167,7 +182,7 @@ onNext E
 onNext F
 onComplete
 ```
-#### Observable.fromCallable():
+#### fromCallable Operator
 * This operator wraps up the expensive imperative code within it and change the imperative code to reactive.
 * Suppose you want to make an expensive call like a Network call, Database update, Write/Read file operation, etc. You cannot do these expensive calls in the main thread which will affect the usability of your application.
   So to make these piece of imperative code asynchronous as well as a reactive one, wrap these expensive calls within Observable.fromCallable().
@@ -208,7 +223,7 @@ But somehow you need a function which returns a `Observable<Object>`. In this sc
 |---|---|
 |Exceptions will be handled by <br/>the operator itself| We have to handle exceptions <br/> by ourself |
 
-#### Observable.fromIterable():
+#### fromIterable Operator
 This operator is same as `Observable.fromArray()` but it creates an Observable with items of Iterable type as an input. The created Observable is capable
 of emitting each item one at a time.
 
@@ -245,7 +260,7 @@ onNext E
 onNext F
 onComplete
 ```
-#### Observable.range():
+#### range Operator
 This operator creates an Observable that emits a range of sequential integers. 
 The function takes two arguments: the starting number and length.
 
@@ -284,7 +299,7 @@ onNext 7
 onComplete
 ```
 
-#### Observable.repeat():
+#### repeat Operator
 
 This operator creates an Observable that emits a particular item or sequence of items repeatedly. 
 
@@ -327,7 +342,7 @@ onComplete
 in this case (i.e) `subscribeOn(Schedulers.io())`. If not, repeat() execution will happen 
 in the UI thread and block the screen.
 
-#### Observable.repeat(count):
+#### repeat Operator With Count:
 
 Using this operator you can pass the number of repetitions that can take place as well.
 
@@ -362,7 +377,7 @@ onNext 2
 onNext 3
 onComplete
 ```
-#### Observable.repeatWhen():
+#### repeatWhen Operator
 
 This operator which allows you to specify a custom logic for retries.
 
@@ -396,7 +411,7 @@ Observable.range(startNo, count)
                     })
 ```
 
-#### Observable.repeatUntil():
+#### repeatUntil Operator
 
 This operator allows you to specify until which point retries should happen.
 
@@ -427,7 +442,7 @@ Observable.range(startNo, count)
                       })
 ```
 
-#### Observable.interval():
+#### interval Operator
 
 Create an Observable that emits a sequence of integers spaced by a given time interval.
 The below code will print values from 0 after every second.
@@ -509,7 +524,7 @@ Suppose if you want the start range and ends at specific count then you can use 
   
   * This operator can be used for the background data sync for every time interval specification. 
  
-#### Observable.timer():
+#### timer Operator
 
 This operator will looks like `Observable.interval()` but the difference 
 is, it creates an Observable that emits only one item after a specified delay then completes.
