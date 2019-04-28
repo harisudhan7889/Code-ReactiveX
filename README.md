@@ -27,7 +27,6 @@ so these operators will be coming under operator category of **Creating Observab
 * [defer](#defer-operator)
 * [fromArray](#fromarray-operator)
 * [fromCallable](#fromcallable-operator)
-* [fromCallable](#fromcallable-operator)
 * [fromIterable](#fromiterable-operator)
 * [range](#range-operator)
 * [repeat](#repeat-operator)
