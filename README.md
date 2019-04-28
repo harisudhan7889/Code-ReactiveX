@@ -283,3 +283,271 @@ onNext 6
 onNext 7
 onComplete
 ```
+
+#### Observable.repeat():
+
+This operator creates an Observable that emits a particular item or sequence of items repeatedly. 
+
+```
+Observable.range(2, 2)
+            .repeat()
+            .take(3)
+            .subscribeOn(Schedulers.io())
+            .subscribe(object : Observer<Int> {
+                override fun onComplete() {
+                    System.out.println("onComplete")
+                }
+
+                override fun onSubscribe(d: Disposable) {
+                    System.out.println("onSubscribe")
+                }
+
+                override fun onNext(value: Int) {
+                    System.out.println("onNext $value")
+                }
+
+                override fun onError(error: Throwable) {
+                    System.out.println("onError $error")
+                }
+
+            })
+```
+**Output:**
+```
+onSubscribe
+onNext 2
+onNext 3
+onNext 2
+onNext 3
+onNext 2
+onNext 3
+onComplete
+```
+**Note**: You have to specify where the asynchronous execution should happen via subscribeOn 
+in this case (i.e) `subscribeOn(Schedulers.io())`. If not, repeat() execution will happen 
+in the UI thread and block the screen.
+
+#### Observable.repeat(count):
+
+Using this operator you can pass the number of repetitions that can take place as well.
+
+```
+Observable.range(2, 2)
+            .repeat(2)
+            .subscribe(object : Observer<Int> {
+                override fun onComplete() {
+                    System.out.println("onComplete")
+                }
+
+                override fun onSubscribe(d: Disposable) {
+                    System.out.println("onSubscribe")
+                }
+
+                override fun onNext(value: Int) {
+                    System.out.println("onNext $value")
+                }
+
+                override fun onError(error: Throwable) {
+                    System.out.println("onError $error")
+                }
+
+            })
+```
+**Output:**
+```
+onSubscribe
+onNext 2
+onNext 3
+onNext 2
+onNext 3
+onComplete
+```
+#### Observable.repeatWhen():
+
+This operator which allows you to specify a custom logic for retries.
+
+In the below example I have combined `repeat()` and `delay()` with the help of the `repeatWhen()`.
+
+```
+Observable.range(startNo, count)
+            .repeatWhen(object : Function<Observable<Any>, ObservableSource<Any>> {
+                override fun apply(t: Observable<Any>): ObservableSource<Any> {
+                    return t.delay(2, TimeUnit.SECONDS)
+                }
+            })
+            .take(3)
+            .subscribe(object : Observer<Int> {
+                        override fun onComplete() {
+                            System.out.println("onComplete")
+                        }
+            
+                        override fun onSubscribe(d: Disposable) {
+                            System.out.println("onSubscribe")
+                        }
+            
+                        override fun onNext(value: Int) {
+                            System.out.println("onNext $value")
+                        }
+            
+                        override fun onError(error: Throwable) {
+                            System.out.println("onError $error")
+                        }
+            
+                    })
+```
+
+#### Observable.repeatUntil():
+
+This operator allows you to specify until which point retries should happen.
+
+```
+val startTimeMillis = System.currentTimeMillis()
+Observable.range(startNo, count)
+            .repeatUntil(object : BooleanSupplier {
+                override fun getAsBoolean(): Boolean {
+                    return System.currentTimeMillis() - startTimeMillis > 500
+                }
+            }).subscribe(object : Observer<Int> {
+                          override fun onComplete() {
+                              System.out.println("onComplete")
+                          }
+              
+                          override fun onSubscribe(d: Disposable) {
+                              System.out.println("onSubscribe")
+                          }
+              
+                          override fun onNext(value: Int) {
+                              System.out.println("onNext $value")
+                          }
+              
+                          override fun onError(error: Throwable) {
+                              System.out.println("onError $error")
+                          }
+              
+                      })
+```
+
+#### Observable.interval():
+
+Create an Observable that emits a sequence of integers spaced by a given time interval.
+The below code will print values from 0 after every second.
+```
+Observable.interval(1, TimeUnit.SECONDS)
+.subscribe(object : Observer<Long> {
+                          override fun onComplete() {
+                              System.out.println("onComplete")
+                          }
+              
+                          override fun onSubscribe(d: Disposable) {
+                              System.out.println("onSubscribe")
+                          }
+              
+                          override fun onNext(value: Long) {
+                              System.out.println("onNext $value")
+                          }
+              
+                          override fun onError(error: Throwable) {
+                              System.out.println("onError $error")
+                          }
+              
+                      })
+
+```
+**Output:**
+```
+onSubscribe
+onNext: 0
+onNext: 1
+onNext: 2
+onNext: 3
+onNext: 4
+onNext: 5
+onNext: 6
+onNext: 7
+onNext: 8
+onNext: 9
+.
+.
+.
+```
+
+* `Observable.interval()` will operates by default on the `Schedulers.computation()`. 
+Suppose if you want to specify the scheduler explicitly then use the below interval() syntax.  
+
+     ```
+     Observable.interval(period, TimeUnit.SECONDS, Schedulers.io())
+     Observable.interval(1, TimeUnit.SECONDS, Schedulers.io())
+     ```
+* Suppose if you wish that the initial delay should be different, then use the below syntax
+     
+     **Without explicit scheduler:**
+     ```
+     Observable.interval(initialDelay, period, TimeUnit.SECONDS)
+     Observable.interval(2, 1, TimeUnit.SECONDS)
+     ```
+     **With explicit scheduler:**
+     ```
+     Observable.interval(initialDelay, period, TimeUnit.SECONDS, Schedulers.io())
+     Observable.interval(2, 1, TimeUnit.SECONDS, Schedulers.io())
+     ```
+     
+* `Observable.interval()` will start always from 0 and keeps emitting until we dispose the observable. 
+Suppose if you want the start range and ends at specific count then you can use the following syntax.
+
+     **Without explicit scheduler:**
+     ```
+     Observable.interval(start, count, initialDelay, period, TimeUnit.SECONDS)
+     Observable.interval(2, 5, 2, 1, TimeUnit.SECONDS)
+     ``` 
+     **With explicit scheduler:**
+     ```
+     Observable.interval(start, count, initialDelay, period, TimeUnit.SECONDS, Schedulers.io())
+     Observable.interval(2, 5, 2, 1, TimeUnit.SECONDS, Schedulers.io())
+     ```     
+
+**Usage in Real Time Scenario:** 
+  
+  * This operator can be used for the background data sync for every time interval specification. 
+ 
+#### Observable.timer():
+
+This operator will looks like `Observable.interval()` but the difference 
+is, it creates an Observable that emits only one item after a specified delay then completes.
+
+```
+Observable.timer(1, TimeUnit.SECONDS)
+.subscribe(object : Observer<Long> {
+                          override fun onComplete() {
+                              System.out.println("onComplete")
+                          }
+              
+                          override fun onSubscribe(d: Disposable) {
+                              System.out.println("onSubscribe")
+                          }
+              
+                          override fun onNext(value: Long) {
+                              System.out.println("onNext $value")
+                          }
+              
+                          override fun onError(error: Throwable) {
+                              System.out.println("onError $error")
+                          }
+              
+                      })
+
+```
+
+**Output:**
+```
+onSubscribe
+onNext: 0
+onComplete
+```
+
+* `Observable.timer()` will operates by default on the `Schedulers.computation()`. 
+Suppose if you want to specify the scheduler explicitly then use the below timer() syntax.  
+
+     ```
+     Observable.timer(period, TimeUnit.SECONDS, Schedulers.io())
+     Observable.timer(1, TimeUnit.SECONDS, Schedulers.io())
+     ```

@@ -7,7 +7,7 @@
 
 
     <EditText
-            android:layout_width="360dp"
+            android:layout_width="390dp"
             android:layout_height="50dp"
             android:inputType="text"
             android:ems="10"
@@ -30,10 +30,12 @@
             android:id="@+id/output"
             android:textSize="13sp"
             android:layout_width="386dp"
-            android:layout_height="161dp"
+            android:layout_height="140dp"
+            android:scrollbars="vertical"
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
             app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
-            android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="parent"/>
+            android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/intervalButton"/>
     <Button
             android:text="Just"
             android:layout_width="wrap_content"
@@ -55,8 +57,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/frombutton" app:layout_constraintStart_toEndOf="@+id/createButton"
             android:layout_marginStart="8dp" app:layout_constraintEnd_toStartOf="@+id/justButton"
-            android:layout_marginEnd="8dp" android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/deferButton"/>
+            android:layout_marginEnd="8dp" android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toTopOf="@+id/deferButton" app:layout_constraintHorizontal_bias="0.578"/>
     <Button
             android:text="FromCallable"
             android:layout_width="386dp"
@@ -75,12 +77,13 @@
             android:layout_marginStart="8dp"/>
     <Button
             android:text="Range"
-            android:layout_width="154dp"
+            android:layout_width="192dp"
             android:layout_height="51dp"
             android:id="@+id/rangeButton" android:layout_marginTop="8dp"
             app:layout_constraintTop_toBottomOf="@+id/fromIterable"
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-            app:layout_constraintStart_toEndOf="@+id/count" android:layout_marginStart="8dp"/>
+            app:layout_constraintStart_toEndOf="@+id/count" android:layout_marginStart="8dp"
+            app:layout_constraintHorizontal_bias="0.0"/>
     <EditText
             android:layout_width="82dp"
             android:layout_height="47dp"
@@ -98,6 +101,51 @@
             android:id="@+id/count" android:layout_marginTop="8dp"
             app:layout_constraintTop_toBottomOf="@+id/fromIterable" app:layout_constraintStart_toEndOf="@+id/startNo"
             android:layout_marginStart="8dp" android:hint="count"/>
+    <Button
+            android:text="Repeat"
+            android:layout_width="wrap_content"
+            android:layout_height="54dp"
+            android:id="@+id/repeatButton"
+            android:layout_marginTop="20dp"
+            app:layout_constraintTop_toBottomOf="@+id/startNo" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="16dp"
+            app:layout_constraintEnd_toStartOf="@+id/repeatWithLimit" android:layout_marginEnd="8dp"
+            app:layout_constraintHorizontal_bias="0.454"/>
+    <Button
+            android:text="Repeat Until"
+            android:layout_width="96dp"
+            android:layout_height="74dp"
+            android:id="@+id/repeatUntil" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+            android:layout_marginTop="16dp" app:layout_constraintTop_toBottomOf="@+id/rangeButton"/>
+    <Button
+            android:text="Repeat(2)"
+            android:layout_width="wrap_content"
+            android:layout_height="58dp"
+            android:id="@+id/repeatWithLimit" android:layout_marginTop="20dp"
+            app:layout_constraintTop_toBottomOf="@+id/count" app:layout_constraintEnd_toStartOf="@+id/repeatWhen"
+            android:layout_marginEnd="8dp"/>
+    <Button
+            android:text="Repeat When"
+            android:layout_width="96dp"
+            android:layout_height="77dp"
+            android:id="@+id/repeatWhen" app:layout_constraintEnd_toStartOf="@+id/repeatUntil"
+            android:layout_marginEnd="8dp" android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/rangeButton"/>
+    <Button
+            android:text="Interval"
+            android:layout_width="186dp"
+            android:layout_height="53dp"
+            android:id="@+id/intervalButton" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="96dp"
+            android:layout_marginTop="12dp" app:layout_constraintTop_toBottomOf="@+id/repeatWhen"
+            app:layout_constraintEnd_toStartOf="@+id/timerButton" android:layout_marginEnd="8dp"
+            app:layout_constraintHorizontal_bias="1.0"/>
+    <Button
+            android:text="Timer"
+            android:layout_width="188dp"
+            android:layout_height="52dp"
+            android:id="@+id/timerButton" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="12dp"
+            android:layout_marginTop="12dp" app:layout_constraintTop_toBottomOf="@+id/repeatWhen"/>
 
 
 </android.support.constraint.ConstraintLayout>

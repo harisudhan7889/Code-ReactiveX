@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.text.method.ScrollingMovementMethod
 import android.view.View
 import com.hari.rxjava.R
 import com.hari.rxjava.Utils
@@ -18,14 +19,13 @@ class BasicOperatorsActivity : AppCompatActivity(),
     View.OnClickListener {
 
     private val observer = object : Observer<String?> {
+        override fun onSubscribe(d: Disposable) {
+            output.text = output.text.toString().plus("\n").plus("onSubscribe")
+        }
 
         override fun onComplete() {
             output.text = output.text.toString().plus("\n").plus("onComplete")
             Utils.hideKeyboard(this@BasicOperatorsActivity)
-        }
-
-        override fun onSubscribe(d: Disposable) {
-            output.text = output.text.toString().plus("\n").plus("onSubscribe")
         }
 
         override fun onNext(value: String) {
@@ -50,6 +50,7 @@ class BasicOperatorsActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.view_basic_operators)
+        output.movementMethod = ScrollingMovementMethod()
         createButton.setOnClickListener(this)
         justButton.setOnClickListener(this)
         deferButton.setOnClickListener(this)
@@ -57,6 +58,12 @@ class BasicOperatorsActivity : AppCompatActivity(),
         fromCallable.setOnClickListener(this)
         fromIterable.setOnClickListener(this)
         rangeButton.setOnClickListener(this)
+        repeatButton.setOnClickListener(this)
+        repeatWithLimit.setOnClickListener(this)
+        repeatUntil.setOnClickListener(this)
+        repeatWhen.setOnClickListener(this)
+        intervalButton.setOnClickListener(this)
+        timerButton.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
@@ -90,6 +97,38 @@ class BasicOperatorsActivity : AppCompatActivity(),
                 if(startNo.text.isNotEmpty() && count.text.isNotEmpty()) {
                     presenter.range(startNo.text.toString().toInt(), count.text.toString().toInt())
                 }
+            }
+            repeatButton -> {
+                output.text = ""
+                if(startNo.text.isNotEmpty() && count.text.isNotEmpty()) {
+                    presenter.repeat(startNo.text.toString().toInt(), count.text.toString().toInt())
+                }
+            }
+            repeatWithLimit -> {
+                output.text = ""
+                if(startNo.text.isNotEmpty() && count.text.isNotEmpty()) {
+                    presenter.repeatWithLimit(startNo.text.toString().toInt(), count.text.toString().toInt())
+                }
+            }
+            repeatUntil -> {
+                output.text = ""
+                if(startNo.text.isNotEmpty() && count.text.isNotEmpty()) {
+                    presenter.repeatUntil(startNo.text.toString().toInt(), count.text.toString().toInt())
+                }
+            }
+            repeatWhen -> {
+                output.text = ""
+                if(startNo.text.isNotEmpty() && count.text.isNotEmpty()) {
+                    presenter.repeatWhen(startNo.text.toString().toInt(), count.text.toString().toInt())
+                }
+            }
+            intervalButton -> {
+                output.text = ""
+                presenter.interval()
+            }
+            timerButton -> {
+                output.text = ""
+                presenter.timer()
             }
         }
     }

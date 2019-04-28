@@ -3,12 +3,13 @@ package com.hari.rxjava.operators.basic
 import android.text.TextUtils
 import io.reactivex.Observable
 import io.reactivex.ObservableOnSubscribe
+import io.reactivex.ObservableSource
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
+import io.reactivex.functions.BooleanSupplier
+import io.reactivex.functions.Function
 import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.Callable
-import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 
 
@@ -21,7 +22,6 @@ class BasicOperatorsPresenterImpl(private val observer: Observer<String?>) {
     fun create(input: String) {
         if (input.isNotEmpty()) {
             val valueArray = TextUtils.split(input, ",")
-
             val observable = Observable.create(ObservableOnSubscribe<String> {
                 // User provided function
                 try {
@@ -33,14 +33,12 @@ class BasicOperatorsPresenterImpl(private val observer: Observer<String?>) {
                     it.onError(e)
                 }
             })
-
-            observable.subscribe(observer)
         }
     }
 
 
     fun just(input: String) {
-        Observable.just(input).subscribe(observer)
+        val observerble = Observable.just(input).subscribe(observer)
     }
 
     /* Deferring Observable code until subscription */
@@ -53,20 +51,20 @@ class BasicOperatorsPresenterImpl(private val observer: Observer<String?>) {
         input = "null"
         val defer = Observable.defer { Observable.just(input) }
         input = "123"
-        defer.subscribe(observer)
+        val observerble = defer.subscribe(observer)
     }
 
 
     fun fromArray(input: String) {
         if (input.isNotEmpty()) {
             val valueArray: Array<String> = TextUtils.split(input, ",")
-            Observable.fromArray(*valueArray)
+            val observerble = Observable.fromArray(*valueArray)
                 .subscribe(observer)
         }
     }
 
     fun fromCallable() {
-        Observable.fromCallable(object : Callable<String> {
+        val observabble = Observable.fromCallable(object : Callable<String> {
             override fun call(): String {
                 return getUserDetailFromDB()
             }
@@ -90,30 +88,67 @@ class BasicOperatorsPresenterImpl(private val observer: Observer<String?>) {
             valueArray.forEach {
                 list.add(it)
             }
-            Observable.fromIterable(list)
+            val disposable = Observable.fromIterable(list)
                 .subscribe(observer)
         }
     }
 
     fun range(startNo: Int, count: Int) {
-        Observable.range(startNo, count)
-            .subscribe(object : Observer<Int> {
-                override fun onComplete() {
-                    System.out.println("onComplete")
-                }
-
-                override fun onSubscribe(d: Disposable) {
-                    System.out.println("onSubscribe")
-                }
-
-                override fun onNext(value: Int) {
-                    System.out.println("onNext $value")
-                }
-
-                override fun onError(error: Throwable) {
-                    System.out.println("onError $error")
-                }
-
-            })
+        val disposable = Observable.range(startNo, count)
+            .map { it.toString() }
+            .subscribe(observer)
     }
+
+    fun repeat(startNo: Int, count: Int) {
+        val disposable = Observable.range(startNo, count)
+            .repeat()
+            .take(3)
+            .map { it.toString() }
+            .subscribeOn(Schedulers.io())
+            .subscribe(observer)
+    }
+
+    fun repeatWithLimit(startNo: Int, count: Int) {
+        val disposable = Observable.range(startNo, count)
+            .repeat(2)
+            .map { it.toString() }
+            .subscribe(observer)
+    }
+
+    fun repeatUntil(startNo: Int, count: Int) {
+        val startTimeMillis = System.currentTimeMillis()
+        val disposable = Observable.range(startNo, count)
+            .repeatUntil(object : BooleanSupplier {
+                override fun getAsBoolean(): Boolean {
+                    return System.currentTimeMillis() - startTimeMillis > 500
+                }
+            }).map { it.toString() }
+            .subscribe(observer)
+    }
+
+    fun repeatWhen(startNo: Int, count: Int) {
+        val disposable = Observable.range(startNo, count)
+            .repeatWhen(object : Function<Observable<Any>, ObservableSource<Any>> {
+                override fun apply(t: Observable<Any>): ObservableSource<Any> {
+                    return t.delay(2, TimeUnit.SECONDS)
+                }
+            })
+            .take(3)
+            .map { it.toString() }
+            .subscribe(observer)
+    }
+
+    fun interval() {
+        Observable.interval(1, TimeUnit.SECONDS)
+            .take(5)
+            .map { it.toString() }
+            .subscribe(observer)
+    }
+
+    fun timer() {
+        Observable.timer(1, TimeUnit.SECONDS)
+            .map { it.toString() }
+            .subscribe(observer)
+    }
+    
 }
