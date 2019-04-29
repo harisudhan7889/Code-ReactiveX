@@ -304,7 +304,7 @@ This is the reason for naming it as `FutureTask`.
   
 * After the subscription, in **doOnSubscribe()** I have started the **FutureTask** using **FutureTask.run()**. 
 
-* Notice the conditional check that i have done before I start the FutureTask. 
+* Notice the conditional check that I have done before I start the FutureTask. 
 It is to check whether this task is already completed, 
 then no need to call the remote service again because as I mentioned previously 
 FutureTask will be holding the response.

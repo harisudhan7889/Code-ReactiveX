@@ -114,7 +114,6 @@ class BasicOperatorsPresenterImpl(private val observer: Observer<String?>) {
             .doOnSubscribe {
                 if (!futureTask!!.isDone) {
                     futureTask!!.run()
-                    futureTask!!.get
                 }
             }
             .doOnDispose {
