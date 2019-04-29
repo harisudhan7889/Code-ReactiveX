@@ -16,7 +16,10 @@ This continuous observation that happens once the stream is defined. But streams
 If the driver is a wanted criminal then the police might stop him, and the car basically gets filtered from the stream(filter function).
 
 
-* RX = Observer + iterator patterns + functional idioms
+* ReactiveX is combination of the best ideas from the Observer pattern, the Iterator patter and functional programming.
+    ```
+    RX = Observer pattern + iterator pattern + functional programming
+    ```
 
 ## Basic Operators:
 Through these operators we can create a basic observables, 
@@ -28,6 +31,7 @@ so these operators will be coming under operator category of **Creating Observab
 * [fromArray](#fromarray-operator)
 * [fromCallable](#fromcallable-operator)
 * [fromIterable](#fromiterable-operator)
+* [fromFuture](#fromfuture-operator)
 * [range](#range-operator)
 * [repeat](#repeat-operator)
 * [repeat With Count](#repeat-operator-with-count)
@@ -259,6 +263,72 @@ onNext E
 onNext F
 onComplete
 ```
+#### fromFuture Operator
+Java has a class called `java.util.concurrent.FutureTask`. Following points will give you an idea about `java.util.concurrent.FutureTask`
+
+* **Cancelable Asynchronous :** It is a cancellable asynchronous process.  
+* **Method Provision :** It provides methods to start and cancel a process, to see if the process is complete and to retrieve the result of the process.
+* **Future use of response :** `FutureTask` will store the response and can be used in the **Future** instead of doing the asynchronous process again.
+This is the reason for naming it as `FutureTask`. 
+
+**How Java's `FutureTask` can be converted to a Observable?**
+
+`Observable.fromFuture()` is a Rx operator, which converts `FutureTask` to an Observable.
+
+```
+       if (futureTask == null) {
+            futureTask = FutureTask<String>(object : Callable<String> {
+                override fun call(): String {
+                    return getUserDetailFromRemote()
+                }
+            })
+        }
+        Observable.fromFuture(futureTask)
+            .subscribeOn(Schedulers.io())
+            .doOnSubscribe {
+                if (!futureTask!!.isDone) {
+                    futureTask!!.run()
+                }
+            }
+            .doOnDispose {
+                if (!futureTask!!.isDone && !futureTask!!.isCancelled) {
+                    futureTask!!.cancel(true)
+                }
+            }
+            .subscribe(observer)
+```
+**Point by point analysis of the code snippet:** 
+
+* If you see the above code snippet, inside of the **FutureTask** 
+  I have invoked a method named **getUserDetailFromRemote()** which is actually a network call.
+  
+* After the subscription, in **doOnSubscribe()** I have started the **FutureTask** using **FutureTask.run()**. 
+
+* Notice the conditional check that i have done before I start the FutureTask. 
+It is to check whether this task is already completed, 
+then no need to call the remote service again because as I mentioned previously 
+FutureTask will be holding the response.
+
+* Suppose for some reason, if you don’t care about the result anymore. You can use **FutureTask.cancel(boolean)** 
+to tell the executor to stop the operation and interrupt its underlying thread.
+Under **doOnDispose** I have coded to cancel the FutureTask. 
+This will cancel the process when the observable gets disposed.
+
+* To avoid exceptions I have checked two conditions before cancelling the task.
+ Conditions to check whether **FutureTask** is not already done and not already cancelled.
+
+* Two more items that I missed out here are the **FutureTask.get()** and  **FutureTask.get(long timeout, TimeUnit unit)** methods.
+
+    **FutureTask.get() :** Using this method you can get the stored response. 
+    Suppose still the asynchronous network call is in progress 
+    and if you try to the retrieve the result using get() method, 
+    then the result can only be retrieved when the process has completed. 
+    The get() method will block if the computation has not yet completed.
+
+    **FutureTask.get(long timeout, TimeUnit unit) :** This method is same like FutureTask.get()
+    but it would waits if necessary for at most the given time for the process(Network call) to complete
+    , and then retrieves its result, if available. If the wait timed out then **TimeoutException** will be thrown.
+
 #### range Operator
 This operator creates an Observable that emits a range of sequential integers. 
 The function takes two arguments: the starting number and length.
@@ -565,3 +635,5 @@ Suppose if you want to specify the scheduler explicitly then use the below timer
      Observable.timer(period, TimeUnit.SECONDS, Schedulers.io())
      Observable.timer(1, TimeUnit.SECONDS, Schedulers.io())
      ```
+
+

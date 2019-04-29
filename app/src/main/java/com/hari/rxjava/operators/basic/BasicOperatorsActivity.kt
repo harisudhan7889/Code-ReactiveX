@@ -64,6 +64,7 @@ class BasicOperatorsActivity : AppCompatActivity(),
         repeatWhen.setOnClickListener(this)
         intervalButton.setOnClickListener(this)
         timerButton.setOnClickListener(this)
+        fromFuture.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
@@ -129,6 +130,10 @@ class BasicOperatorsActivity : AppCompatActivity(),
             timerButton -> {
                 output.text = ""
                 presenter.timer()
+            }
+            fromFuture -> {
+                output.text = ""
+                presenter.fromFuture()
             }
         }
     }

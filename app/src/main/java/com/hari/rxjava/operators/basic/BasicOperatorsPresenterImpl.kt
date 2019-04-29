@@ -9,14 +9,16 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BooleanSupplier
 import io.reactivex.functions.Function
 import io.reactivex.schedulers.Schedulers
-import java.util.concurrent.Callable
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.*
 
 
 /**
  * @author Hari Hara Sudhan.N
  */
 class BasicOperatorsPresenterImpl(private val observer: Observer<String?>) {
+
+    private var futureTask: FutureTask<String>? = null
+
 
     /*RxJava Create operation*/
     fun create(input: String) {
@@ -66,7 +68,7 @@ class BasicOperatorsPresenterImpl(private val observer: Observer<String?>) {
     fun fromCallable() {
         val observabble = Observable.fromCallable(object : Callable<String> {
             override fun call(): String {
-                return getUserDetailFromDB()
+                return getUserDetailFromRemote()
             }
         })
             .subscribeOn(Schedulers.io())
@@ -76,9 +78,15 @@ class BasicOperatorsPresenterImpl(private val observer: Observer<String?>) {
 
     /*Time consuming task. This can be any Network call, DB updating call, etc*/
     @Throws(InterruptedException::class)
-    fun getUserDetailFromDB(): String {
+    fun getUserDetailFromRemote(): String {
         Thread.sleep(10000)
         return "User1"
+    }
+
+    @Throws(InterruptedException::class)
+    fun getUserDetailFromDB(): String {
+        Thread.sleep(5000)
+        return "User2"
     }
 
     fun fromIterable(input: String) {
@@ -91,6 +99,30 @@ class BasicOperatorsPresenterImpl(private val observer: Observer<String?>) {
             val disposable = Observable.fromIterable(list)
                 .subscribe(observer)
         }
+    }
+
+    fun fromFuture() {
+        if (futureTask == null) {
+            futureTask = FutureTask<String>(object : Callable<String> {
+                override fun call(): String {
+                    return getUserDetailFromRemote()
+                }
+            })
+        }
+        Observable.fromFuture(futureTask)
+            .subscribeOn(Schedulers.io())
+            .doOnSubscribe {
+                if (!futureTask!!.isDone) {
+                    futureTask!!.run()
+                    futureTask!!.get
+                }
+            }
+            .doOnDispose {
+                if (!futureTask!!.isDone && !futureTask!!.isCancelled) {
+                    futureTask!!.cancel(true)
+                }
+            }
+            .subscribe(observer)
     }
 
     fun range(startNo: Int, count: Int) {
