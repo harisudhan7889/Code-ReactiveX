@@ -1,5 +1,3 @@
-package com.hari.rxjava
-
 import android.app.Activity
 import android.support.v7.app.AppCompatActivity
 import android.view.inputmethod.InputMethodManager
@@ -7,7 +5,7 @@ import android.view.inputmethod.InputMethodManager
 /**
  * @author Hari Hara Sudhan.N
  */
-object Utils {
+object BasicOperatorUtils {
     fun hideKeyboard(activity: AppCompatActivity) {
         val inputMethodManager = activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         val focusedView = activity.currentFocus

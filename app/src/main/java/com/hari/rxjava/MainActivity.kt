@@ -3,7 +3,7 @@ package com.hari.rxjava
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import com.hari.rxjava.operators.basic.BasicOperatorsActivity
+import com.hari.basicoperators.BasicOperatorsActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
 /**

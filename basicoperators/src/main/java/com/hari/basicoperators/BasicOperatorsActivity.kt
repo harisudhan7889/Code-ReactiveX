@@ -1,13 +1,13 @@
-package com.hari.rxjava.operators.basic
+package com.hari.basicoperators
 
+import BasicOperatorUtils
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.text.method.ScrollingMovementMethod
 import android.view.View
-import com.hari.rxjava.R
-import com.hari.rxjava.Utils
+import com.hari.rxjava.operators.basic.BasicOperatorsPresenterImpl
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.view_basic_operators.*
@@ -25,7 +25,7 @@ class BasicOperatorsActivity : AppCompatActivity(),
 
         override fun onComplete() {
             output.text = output.text.toString().plus("\n").plus("onComplete")
-            Utils.hideKeyboard(this@BasicOperatorsActivity)
+            BasicOperatorUtils.hideKeyboard(this@BasicOperatorsActivity)
         }
 
         override fun onNext(value: String) {
