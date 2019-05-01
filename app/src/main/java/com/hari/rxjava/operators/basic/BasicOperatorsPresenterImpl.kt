@@ -6,10 +6,15 @@ import io.reactivex.ObservableOnSubscribe
 import io.reactivex.ObservableSource
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BooleanSupplier
 import io.reactivex.functions.Function
 import io.reactivex.schedulers.Schedulers
-import java.util.concurrent.*
+import org.reactivestreams.Publisher
+import java.util.*
+import java.util.concurrent.Callable
+import java.util.concurrent.FutureTask
+import java.util.concurrent.TimeUnit
 
 
 /**
@@ -18,13 +23,14 @@ import java.util.concurrent.*
 class BasicOperatorsPresenterImpl(private val observer: Observer<String?>) {
 
     private var futureTask: FutureTask<String>? = null
+    private var observable: Observable<String>? = null
 
 
     /*RxJava Create operation*/
     fun create(input: String) {
         if (input.isNotEmpty()) {
             val valueArray = TextUtils.split(input, ",")
-            val observable = Observable.create(ObservableOnSubscribe<String> {
+            Observable.create(ObservableOnSubscribe<String> {
                 // User provided function
                 try {
                     for (value in valueArray) {
@@ -34,13 +40,13 @@ class BasicOperatorsPresenterImpl(private val observer: Observer<String?>) {
                 } catch (e: Exception) {
                     it.onError(e)
                 }
-            })
+            }).subscribe(observer)
         }
     }
 
 
     fun just(input: String) {
-        val observerble = Observable.just(input).subscribe(observer)
+        Observable.just(input).subscribe(observer)
     }
 
     /* Deferring Observable code until subscription */
@@ -60,13 +66,13 @@ class BasicOperatorsPresenterImpl(private val observer: Observer<String?>) {
     fun fromArray(input: String) {
         if (input.isNotEmpty()) {
             val valueArray: Array<String> = TextUtils.split(input, ",")
-            val observerble = Observable.fromArray(*valueArray)
+            Observable.fromArray(*valueArray)
                 .subscribe(observer)
         }
     }
 
     fun fromCallable() {
-        val observabble = Observable.fromCallable(object : Callable<String> {
+        Observable.fromCallable(object : Callable<String> {
             override fun call(): String {
                 return getUserDetailFromRemote()
             }
@@ -125,13 +131,13 @@ class BasicOperatorsPresenterImpl(private val observer: Observer<String?>) {
     }
 
     fun range(startNo: Int, count: Int) {
-        val disposable = Observable.range(startNo, count)
+        Observable.range(startNo, count)
             .map { it.toString() }
             .subscribe(observer)
     }
 
     fun repeat(startNo: Int, count: Int) {
-        val disposable = Observable.range(startNo, count)
+        Observable.range(startNo, count)
             .repeat()
             .take(3)
             .map { it.toString() }
@@ -140,7 +146,7 @@ class BasicOperatorsPresenterImpl(private val observer: Observer<String?>) {
     }
 
     fun repeatWithLimit(startNo: Int, count: Int) {
-        val disposable = Observable.range(startNo, count)
+        Observable.range(startNo, count)
             .repeat(2)
             .map { it.toString() }
             .subscribe(observer)
@@ -148,7 +154,7 @@ class BasicOperatorsPresenterImpl(private val observer: Observer<String?>) {
 
     fun repeatUntil(startNo: Int, count: Int) {
         val startTimeMillis = System.currentTimeMillis()
-        val disposable = Observable.range(startNo, count)
+        Observable.range(startNo, count)
             .repeatUntil(object : BooleanSupplier {
                 override fun getAsBoolean(): Boolean {
                     return System.currentTimeMillis() - startTimeMillis > 500
@@ -158,7 +164,7 @@ class BasicOperatorsPresenterImpl(private val observer: Observer<String?>) {
     }
 
     fun repeatWhen(startNo: Int, count: Int) {
-        val disposable = Observable.range(startNo, count)
+        Observable.range(startNo, count)
             .repeatWhen(object : Function<Observable<Any>, ObservableSource<Any>> {
                 override fun apply(t: Observable<Any>): ObservableSource<Any> {
                     return t.delay(2, TimeUnit.SECONDS)

@@ -67,7 +67,7 @@ so these operators will be coming under operator category of **Creating Observab
   **Actual Definition:** This operator creates an Observable from scratch by calling observer methods programmatically. 
   An emitter is provided through which we can call the respective interface methods when needed.
   
-  **When to use?** 
+#####  <font color ="#800000">When to use?</font>
   
   You can use Observable.create() in the following situations 
   1. If you are more experienced and need a custom operator or listener.
@@ -217,9 +217,14 @@ Observable.fromCallable(object : Callable<String> {
                 }
             })
 ```
-##### At what situation you can use this operator?
-Imagine that you have a function. This function is developed before RxJava and cannot be changed. 
-But somehow you need a function which returns a `Observable<Object>`. In this scenario you can use Observable.fromCallable() operator.
+
+##### <font color ="#800000">When to use?</font>
+* Imagine that you have a function. This function is developed before RxJava and cannot be changed. 
+But somehow you need a function which returns a `Observable<Object>`. 
+In this scenario you can use Observable.fromCallable() operator.
+
+* And one more scenario, the one that you will come across the most is where you 
+define a computation(Asynchronous calls) which returns a single value and then completes.   
 
 ##### Difference between fromCallable() and defer()
 | fromCallable()| defer() |

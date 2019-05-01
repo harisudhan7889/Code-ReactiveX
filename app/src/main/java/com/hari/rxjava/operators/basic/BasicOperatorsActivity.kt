@@ -65,6 +65,7 @@ class BasicOperatorsActivity : AppCompatActivity(),
         intervalButton.setOnClickListener(this)
         timerButton.setOnClickListener(this)
         fromFuture.setOnClickListener(this)
+        fromPublisher.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
@@ -134,6 +135,10 @@ class BasicOperatorsActivity : AppCompatActivity(),
             fromFuture -> {
                 output.text = ""
                 presenter.fromFuture()
+            }
+            fromPublisher -> {
+                output.text = ""
+                //Todo Yet to implement
             }
         }
     }
