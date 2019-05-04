@@ -20,10 +20,8 @@ If the driver is a wanted criminal then the police might stop him, and the car b
     RX = Observer pattern + iterator pattern + functional programming
     ```
     
-Why ReactiveX?
-Before Reactive Programming 
-
 
 RxJava is a JVM implementation of ReactiveX. Let see about all the RxJava Operators
 
 1. [Basic Operators](basicoperators/README.md)
+2. [Transform Operators](transformoperators/README.md)

@@ -4,9 +4,10 @@
 * [buffer](#buffer-operator)
 * [map](#map-operator)
 * [flatMap](#flatmap-operator)
+* [concatMap](#concatmap-operator)
 
 #### buffer Operator
-
+I have called two dependent 
 **Actual Definition:**
 
 This operator periodically gather items from an Observable into bundles and emit 
@@ -121,7 +122,7 @@ These transformed items are received by the observer.
 
   When you have to get a remote response and provide an input to a view. 
   But the response object structure is different from the view's expected input structure, at this 
-  situation you can use `map()` operator to convert response object model to the expect model.
+  situation you can use `map()` operator to convert response object model to the expected model.
   
   ```
   getUserDetail()
@@ -215,8 +216,8 @@ onComplete
 
 In the above implementation, I have called two dependent network services. 
 First network call `getRestaurantsAtLocation(latitude, longitude)` is to get the restaurants details in your location and with 
-these restaurants details a another network api `getRestaurantReview(restaurant.id)` to fetch the user reviews
-for the respective restaurants is called. Will explain it more clear.
+these restaurants details an another network api `getRestaurantReview(restaurant.id)` to fetch the user reviews
+for the respective restaurant is called. Will explain it more clear.
 
 1. `getRestaurantsAtLocation(latitude, longitude)` will fetch the List of Restaurants.
 2. Each Restaurants are inputed one by one to the `flatMap`.
