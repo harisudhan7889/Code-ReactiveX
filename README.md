@@ -1,8 +1,7 @@
 # Code ReactiveX 
 My coding journey with **RxJava+RxAndroid**
 
-## Reactivex?
-
+## ReactiveX?
 
 * ReactiveX is a programming model, where data flows emitted by one component (eg. Click Event) will be 
 processed by set of **RX Functions** which will pass the changes to 
@@ -20,4 +19,11 @@ If the driver is a wanted criminal then the police might stop him, and the car b
     ```
     RX = Observer pattern + iterator pattern + functional programming
     ```
-* [Basic Operators](basicoperators/README.md)
+    
+Why ReactiveX?
+Before Reactive Programming 
+
+
+RxJava is a JVM implementation of ReactiveX. Let see about all the RxJava Operators
+
+1. [Basic Operators](basicoperators/README.md)

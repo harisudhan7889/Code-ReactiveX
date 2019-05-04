@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import com.hari.basicoperators.BasicOperatorsActivity
+import com.hari.transformoperators.TransformOperatorsActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
 /**
@@ -15,12 +16,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         basicOperators.setOnClickListener(this)
+        transformOperators.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
         when(v) {
             basicOperators -> {
                 startActivity(BasicOperatorsActivity.getIntent(this))
+            }
+            transformOperators -> {
+                startActivity(TransformOperatorsActivity.getIntent(this))
             }
         }
     }

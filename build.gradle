@@ -23,6 +23,17 @@ allprojects {
     }
 }
 
+ext {
+    // Gson
+    gsonVersion = '2.8.1'
+
+    // Retrofit
+    retrofitVersion = '2.3.0'
+
+    // okhttp
+    okHttpVersion = '3.9.0'
+}
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
