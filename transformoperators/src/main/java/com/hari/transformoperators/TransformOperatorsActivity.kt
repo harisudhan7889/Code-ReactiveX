@@ -34,6 +34,7 @@ class TransformOperatorsActivity : AppCompatActivity(),
         map.setOnClickListener(this)
         flatMap.setOnClickListener(this)
         switchMap.setOnClickListener(this)
+        groupBy.setOnClickListener(this)
     }
 
     private fun getGeoLocations() {
@@ -45,8 +46,8 @@ class TransformOperatorsActivity : AppCompatActivity(),
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-            location.let {
+            val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)?:locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+            location?.let {
                 latitude = location.latitude
                 longitude = location.longitude
             }
@@ -71,6 +72,9 @@ class TransformOperatorsActivity : AppCompatActivity(),
             }
             switchMap -> {
                 presenter.switchMap()
+            }
+            groupBy -> {
+                presenter.groupBy(latitude, longitude)
             }
         }
     }

@@ -7,6 +7,7 @@
 * [concatMap](#concatmap-operator)
 * [switchMap](#switchmap-operator)
 * [Difference between all map operators](#difference-between-all-map-operators)
+* [groupBy](#groupby-operator)
 
 #### buffer Operator
 I have called two dependent 
@@ -326,3 +327,104 @@ onComplete
 | Return Type | Modified Item | Observable | Observable | Observable |     
 | When can be used?| Consider using map operator where there is an offline operations needs to be done on emitted data. If we got something from server but that doesn’t fulfils our requirement. In that case, Map can be used to alter the emitted data.| Choose flatMap when the order is not important and want to send all the network calls simultaneously. In our case, we have fetched the restaurant details in our location. So in this situation order does not matters.| Choose concatMap when the order is important. If you consider ConcatMap in this scenario, the time takes to fetch the restaurants takes very longer time as the ConcatMap won’t make simultaneous calls in order to maintain item order.|switchMap is best suited when you want to discard the response and consider the latest one. Let’s say you are writing an Instant Search app which sends search query to server each time user types something. In this case multiple requests will be sent to server with multiple queries, but we want to show the result of latest typed query only. For this case, switchMap is best operator to use.|
 
+#### groupBy Operator
+
+This operator divides an Observable into a set of Observables that 
+each emit a different group of items from the original Observable, organised by key.
+
+Let's assume you are creating a Restaurant application, where you have 
+to display the Restaurants by grouping them by their major food type. 
+For example if Restaurant1 serves Asian foods then it should be under Asian.
+This is the situation where you can choose `groupBy()` operator.  
+
+Let us see a sample implementation to understand the `groupBy()` operator clearly.
+
+```
+        val progressBar = ProgressDialog(context)
+        val cuisineAsian = "Asian"
+        val cuisineAmerican = "American"
+        val cuisineItalian = "Italian"
+        val cuisineOthers = "Other"
+        val endPoint = Api.getClient().create(ApiEndPoint::class.java)
+        val observable = endPoint.getRestaurantsAtLocation(latitude, longitude, 0, 20)
+        val subscribe = observable
+            .flatMap { Observable.fromIterable(it.restaurants) }
+            .groupBy(object : Function<RestaurantObject, String> {
+                override fun apply(restaurantObject: RestaurantObject): String {
+                    return when {
+                        restaurantObject.restaurant.cuisines.contains("Asian", true) -> cuisineAsian
+                        restaurantObject.restaurant.cuisines.contains("American", true) -> cuisineAmerican
+                        restaurantObject.restaurant.cuisines.contains("Italian", true) -> cuisineItalian
+                        else -> cuisineOthers
+                    }
+                }
+            })
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { 
+               System.out.println("OnSubscribe")
+               progressBar.show() 
+              }
+            .doOnComplete { 
+               System.out.println("OnComplete")
+               progressBar.dismiss() 
+              }
+            .doOnError { progressBar.dismiss() }
+            .subscribe {
+                when (it.key) {
+                    cuisineAsian -> {
+                        it.subscribe {
+                            System.out.println("Asian Food available at ${it.restaurant.name}")
+                        }
+                    }
+                    cuisineAmerican -> {
+                        it.subscribe {
+                            System.out.println("American Food available at ${it.restaurant.name}")
+                        }
+                    }
+                    cuisineItalian -> {
+                        it.subscribe {
+                            System.out.println("Italian Food available at ${it.restaurant.name}")
+                        }
+                    }
+                }
+            }
+```
+**Output**
+```
+OnSubscribe
+Asian Food available at Coal Barbecues
+Asian Food available at VB Signature - Progressive Veg Restaurant
+Italian Food available at Onesta
+Italian Food available at Fromage
+American Food available at Chili's American Grill & Bar
+OnComplete
+```
+**Code Analysis**
+1. `getRestaurantsAtLocation()` will fetch the restaurants near your location.
+2. My need here is to group the Restaurants under Asian, American and Italian food types.
+With the help of `groupBy()` operator I can achieve my need.
+3. Fetched restaurants are emitted one by one to `groupBy()`.   
+4. The `groupBy()` function will check whether the restaurant 
+serving food type is of Asian/American/Italian and returns 
+the key under which the restaurants are stored in a Observable.
+5. `groupBy()` will divide the main observable to observables for each food type like below.
+<br/>
+
+   | Observable | Key | Object |
+   |---|---|---|
+   | GroupedObservable1 | Asian | RestaurantObject1(Coal Barbecues) |
+   | | | RestaurantObject3(VB Signature) |
+   | | | |
+   | GroupedObservable2 | American | RestaurantObject2(Chili's American Grill & Bar) |
+   | | | |
+   | GroupedObservable3 | Italian | RestaurantObject6(Onesta) |
+   | | | RestaurantObject7(Fromage) |
+   
+ 6. Each observable will emit the group of restaurant items one by one after subscribing.
+ 
+  
+   
+       
+   
+    

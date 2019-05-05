@@ -7,11 +7,14 @@ import com.hari.transformoperators.model.UserReviews
 import com.hari.transformoperators.model.UserReviewsObject
 import com.hari.transformoperators.network.Api
 import com.hari.transformoperators.network.ApiEndPoint
+import io.reactivex.Completable
+import io.reactivex.CompletableObserver
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Function
+import io.reactivex.observables.GroupedObservable
 import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 
@@ -143,5 +146,51 @@ class TransformOperatorsPresenter(private val context: Context) {
                     System.out.println("switchMap onError $error")
                 }
             })
+    }
+
+    fun groupBy(latitude: Double, longitude: Double) {
+        val progressBar = ProgressDialog(context)
+        val endPoint = Api.getClient().create(ApiEndPoint::class.java)
+        val observable = endPoint.getRestaurantsAtLocation(latitude, longitude, 0, 20)
+        val cuisineAsian = "Asian"
+        val cuisineAmerican = "American"
+        val cuisineItalian = "Italian"
+        val cuisineOthers = "Other"
+        val subscribe = observable
+            .flatMap { Observable.fromIterable(it.restaurants) }
+            .groupBy(object : Function<RestaurantObject, String> {
+                override fun apply(restaurantObject: RestaurantObject): String {
+                    return when {
+                        restaurantObject.restaurant.cuisines.contains("Asian", true) -> cuisineAsian
+                        restaurantObject.restaurant.cuisines.contains("American", true) -> cuisineAmerican
+                        restaurantObject.restaurant.cuisines.contains("Italian", true) -> cuisineItalian
+                        else -> cuisineOthers
+                    }
+                }
+            })
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { progressBar.show() }
+            .doOnComplete { progressBar.dismiss() }
+            .doOnError { progressBar.dismiss() }
+            .subscribe {
+                when (it.key) {
+                    cuisineAsian -> {
+                        it.subscribe {
+                            System.out.println("Asian Food available at ${it.restaurant.name}")
+                        }
+                    }
+                    cuisineAmerican -> {
+                        it.subscribe {
+                            System.out.println("American Food available at ${it.restaurant.name}")
+                        }
+                    }
+                    cuisineItalian -> {
+                        it.subscribe {
+                            System.out.println("Italian Food available at ${it.restaurant.name}")
+                        }
+                    }
+                }
+            }
     }
 }

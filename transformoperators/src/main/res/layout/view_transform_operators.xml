@@ -30,9 +30,16 @@
     <Button
             android:text="Switch Map"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="53dp"
             android:id="@+id/switchMap" app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
             app:layout_constraintHorizontal_bias="0.0" android:layout_marginTop="16dp"
             app:layout_constraintTop_toBottomOf="@+id/buffer"/>
+    <Button
+            android:text="Group By"
+            android:layout_width="wrap_content"
+            android:layout_height="55dp"
+            android:id="@+id/groupBy" android:layout_marginTop="12dp"
+            app:layout_constraintTop_toBottomOf="@+id/map" app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="192dp"/>
 </android.support.constraint.ConstraintLayout>
