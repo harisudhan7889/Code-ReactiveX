@@ -5,6 +5,8 @@
 * [map](#map-operator)
 * [flatMap](#flatmap-operator)
 * [concatMap](#concatmap-operator)
+* [switchMap](#switchmap-operator)
+* [Difference between all map operators](#difference-between-all-map-operators)
 
 #### buffer Operator
 I have called two dependent 
