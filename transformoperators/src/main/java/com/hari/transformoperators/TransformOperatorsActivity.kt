@@ -33,6 +33,7 @@ class TransformOperatorsActivity : AppCompatActivity(),
         buffer.setOnClickListener(this)
         map.setOnClickListener(this)
         flatMap.setOnClickListener(this)
+        switchMap.setOnClickListener(this)
     }
 
     private fun getGeoLocations() {
@@ -67,6 +68,9 @@ class TransformOperatorsActivity : AppCompatActivity(),
             }
             flatMap -> {
                 presenter.flatMap(latitude, longitude)
+            }
+            switchMap -> {
+                presenter.switchMap()
             }
         }
     }

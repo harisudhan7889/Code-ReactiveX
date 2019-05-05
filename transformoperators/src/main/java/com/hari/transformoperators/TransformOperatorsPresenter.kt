@@ -13,6 +13,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Function
 import io.reactivex.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 
 /**
  * @author Hari Hara Sudhan.N
@@ -109,6 +110,37 @@ class TransformOperatorsPresenter(private val context: Context) {
 
                 override fun onError(error: Throwable) {
                     System.out.println("FlatMap onError $error")
+                }
+            })
+    }
+
+    fun switchMap() {
+        val valueArray: Array<Int> = arrayOf(1, 2, 3, 4, 5, 6)
+        Observable.fromArray(*valueArray)
+            .switchMap(object : Function<Int, Observable<String>> {
+                override fun apply(t: Int): Observable<String> {
+                    val value = if (t % 2 == 0) {
+                        "$t is a Even Number"
+                    } else {
+                        "$t is a Odd Number"
+                    }
+                    return Observable.just(value).delay(1, TimeUnit.SECONDS)
+                }
+            }).subscribe(object : Observer<String> {
+                override fun onComplete() {
+                    System.out.println("switchMap onComplete")
+                }
+
+                override fun onSubscribe(d: Disposable) {
+                    System.out.println("switchMap onSubscribe")
+                }
+
+                override fun onNext(value: String) {
+                    System.out.println("switchMap onNext: $value")
+                }
+
+                override fun onError(error: Throwable) {
+                    System.out.println("switchMap onError $error")
                 }
             })
     }

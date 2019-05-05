@@ -157,7 +157,10 @@ These transformed items are received by the observer.
   ```
   
   Here, the observable gives us ApiUser object which we are converting into User object by using the map operator.
-
+  
+  Now you can notice the `apply(ApiUser apiUser)` function of the `map()` 
+  operator returning the modified item `User` instead of an `Observable<User>`.
+  
 #### flatMap Operator
 
 **Actual Definition:**
@@ -251,4 +254,73 @@ execution, network call to fetch reviews for Restaurant 2 will be started.
 
   It can be used when you want to maintain the order of execution.
   
+#### switchMap Operator  
+
+SwitchMap is a bit different from FlatMap and ConcatMap. 
+SwitchMap unsubscribe from previous source Observable whenever new item started emitting, 
+thus always emitting the items from current Observable. 
+
+After analysing the below code snippet you will understand `switchMap()` more clearly.
+
+```
+val valueArray: Array<Int> = arrayOf(1, 2, 3, 4, 5, 6)
+        Observable.fromArray(*valueArray)
+            .switchMap(object : Function<Int, Observable<String>> {
+                override fun apply(input: Int): Observable<String> {
+                    val value = if (input % 2 == 0) {
+                        "$input is a Even Number"
+                    } else {
+                        "$input is a Odd Number"
+                    }
+                    return Observable.just(value).delay(1, TimeUnit.SECONDS)
+                }
+            }).subscribe(object : Observer<String> {
+                override fun onComplete() {
+                    System.out.println("onComplete")
+                }
+
+                override fun onSubscribe(d: Disposable) {
+                    System.out.println("onSubscribe")
+                }
+
+                override fun onNext(value: String) {
+                    System.out.println("onNext: $value")
+                }
+
+                override fun onError(error: Throwable) {
+                    System.out.println("onError $error")
+                }
+            })
+```
+**Output**
+```
+onSubscribe
+onNext: 6 is a Even Number
+onComplete
+```
+
+**Code Analysis**
+
+ 1. `fromArray()` emits array of integer values.
+ 2. These integer values are the input for the switchMap.
+ 3. I will explain what will happen when `fromArray()` emits the value one by one to `switchMap()`.
+    ```
+    fromArray -emits-> 1 ->switchMap --- Execution 1 in progress 
+    fromArray -emits-> 2 ->switchMap --- Unsubscribe Execution 1 and Execution 2 in progress
+    fromArray -emits-> 3 ->switchMap --- Unsubscribe Execution 2 and Execution 3 in progress
+    fromArray -emits-> 4 ->switchMap --- Unsubscribe Execution 3 and Execution 4 in progress
+    fromArray -emits-> 5 ->switchMap --- Unsubscribe Execution 4 and Execution 5 in progress
+    fromArray -emits-> 6 ->switchMap --- Unsubscribe Execution 5 and Execution 6 in progress
+    
+    finally switchMap emits the final executed Observable.
+    ```
+
+#### Difference between all Map operators
+
+
+|  |  map | flatMap | concantMap | switchMap |
+|---|---|---|---|---|
+| Emission Order |The order of insertion is <br/> maintained during emission.| The order of insertion is <br/> not maintained during emission.|The order of insertion is <br/> maintained during emission.| NA|
+| Return Type | Modified Item | Observable | Observable | Observable |     
+| When can be used?| Consider using map operator where there is an offline operations needs to be done on emitted data. If we got something from server but that doesn’t fulfils our requirement. In that case, Map can be used to alter the emitted data.| Choose flatMap when the order is not important and want to send all the network calls simultaneously. In our case, we have fetched the restaurant details in our location. So in this situation order does not matters.| Choose concatMap when the order is important. If you consider ConcatMap in this scenario, the time takes to fetch the restaurants takes very longer time as the ConcatMap won’t make simultaneous calls in order to maintain item order.|switchMap is best suited when you want to discard the response and consider the latest one. Let’s say you are writing an Instant Search app which sends search query to server each time user types something. In this case multiple requests will be sent to server with multiple queries, but we want to show the result of latest typed query only. For this case, switchMap is best operator to use.|
 
