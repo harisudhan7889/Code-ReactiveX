@@ -2,17 +2,13 @@ package com.hari.transformoperators
 
 import android.app.ProgressDialog
 import android.content.Context
-import com.hari.transformoperators.model.RestaurantObject
-import com.hari.transformoperators.model.UserReviews
-import com.hari.transformoperators.model.UserReviewsObject
+import com.hari.transformoperators.model.*
 import com.hari.transformoperators.network.Api
 import com.hari.transformoperators.network.ApiEndPoint
-import io.reactivex.Completable
-import io.reactivex.CompletableObserver
-import io.reactivex.Observable
-import io.reactivex.Observer
+import io.reactivex.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function
 import io.reactivex.observables.GroupedObservable
 import io.reactivex.schedulers.Schedulers
@@ -192,5 +188,122 @@ class TransformOperatorsPresenter(private val context: Context) {
                     }
                 }
             }
+    }
+
+    fun scan1() {
+        Observable.just(1,2,3,4,5)
+            .scan(object : BiFunction<Int, Int, Int>{
+                override fun apply(t1: Int, t2: Int): Int {
+                    return t1 + t2
+                }
+            })
+            .subscribe(object : Observer<Int>{
+                override fun onComplete() {
+                    System.out.println("scan1 onComplete")
+                }
+
+                override fun onSubscribe(d: Disposable) {
+                    System.out.println("scan1 onSubscribe")
+                }
+
+                override fun onNext(result: Int) {
+                    System.out.println("scan1 onNext $result")
+                }
+
+                override fun onError(e: Throwable) {
+                    System.out.println("scan1 onError $e")
+                }
+            })
+    }
+
+    fun scan2() {
+
+        val countries = getWorldCupWinners()
+
+        Observable.fromIterable(countries)
+            .scan(WinningCount(""), object : BiFunction<WinningCount, WinningCount, WinningCount> {
+                override fun apply(accumulator: WinningCount, newObject: WinningCount): WinningCount {
+                    if (accumulator.winningCounts.containsKey(newObject.countryName)) {
+                        val winningCount = accumulator.winningCounts[newObject.countryName] ?: 0
+                        accumulator.winningCounts[newObject.countryName] = winningCount.inc()
+                    } else {
+                        accumulator.winningCounts[newObject.countryName] = 1
+                    }
+                    return accumulator
+                }
+            })
+            .subscribe(object : Observer<WinningCount> {
+                override fun onComplete() {
+                    System.out.println("scan2 onComplete")
+                }
+
+                override fun onSubscribe(d: Disposable) {
+                    System.out.println("scan2 onSubscribe")
+                }
+
+                override fun onNext(t: WinningCount) {
+                    t.winningCounts.forEach {
+                        System.out.println("scan2 onNext: No of times ${it.key} had won the Cricket World Cup is ${it.value}")
+                    }
+                }
+
+                override fun onError(e: Throwable) {
+                    System.out.println("scan2 onError $e")
+                }
+            })
+    }
+
+    fun reduce() {
+        val countries = getWorldCupWinners()
+        Observable.fromIterable(countries)
+            .reduce(WinningCount(""), object : BiFunction<WinningCount, WinningCount, WinningCount> {
+                override fun apply(accumulator: WinningCount, newObject: WinningCount): WinningCount {
+                    if (accumulator.winningCounts.containsKey(newObject.countryName)) {
+                        val winningCount = accumulator.winningCounts[newObject.countryName] ?: 0
+                        accumulator.winningCounts[newObject.countryName] = winningCount.inc()
+                    } else {
+                        accumulator.winningCounts[newObject.countryName] = 1
+                    }
+                    return accumulator
+                }
+            })
+            .subscribe(object : SingleObserver<WinningCount> {
+                override fun onSuccess(accumulator: WinningCount) {
+                    accumulator.winningCounts.forEach {
+                        System.out.println("reduce onSuccess: No of times ${it.key} had won the Cricket World Cup is ${it.value}")
+                    }
+                }
+
+                override fun onSubscribe(d: Disposable) {
+                    System.out.println("reduce onSubscribe")
+                }
+
+                override fun onError(e: Throwable) {
+                    System.out.println("reduce onError $e")
+                }
+
+            })
+    }
+
+    private fun getWorldCupWinners(): MutableList<WinningCount> {
+        val countries = mutableListOf<WinningCount>()
+        val valueArray: Array<String> = arrayOf(
+            "West Indies",
+            "West Indies",
+            "India",
+            "Australia",
+            "Pakistan",
+            "Sri Lanka",
+            "Australia",
+            "Australia",
+            "Australia",
+            "India",
+            "Australia"
+        )
+
+        for (i in 0 until valueArray.size - 1) {
+            countries.add(WinningCount(valueArray[i]))
+        }
+        return countries
     }
 }

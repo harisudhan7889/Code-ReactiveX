@@ -42,4 +42,28 @@
             android:id="@+id/groupBy" android:layout_marginTop="12dp"
             app:layout_constraintTop_toBottomOf="@+id/map" app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="192dp"/>
+    <Button
+            android:text="scan1"
+            android:layout_width="wrap_content"
+            android:layout_height="52dp"
+            android:id="@+id/scan1" android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/flatMap" app:layout_constraintStart_toEndOf="@+id/groupBy"
+            android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+            app:layout_constraintHorizontal_bias="0.045"/>
+    <Button
+            android:text="scan2"
+            android:layout_width="80dp"
+            android:layout_height="53dp"
+            android:id="@+id/scan2" app:layout_constraintStart_toEndOf="@+id/scan1" android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp" app:layout_constraintTop_toBottomOf="@+id/flatMap"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+            app:layout_constraintHorizontal_bias="1.0"/>
+    <Button
+            android:text="reduce"
+            android:layout_width="wrap_content"
+            android:layout_height="55dp"
+            android:id="@+id/reduce" app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
+            android:layout_marginTop="12dp" app:layout_constraintTop_toBottomOf="@+id/switchMap"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+            app:layout_constraintHorizontal_bias="0.0"/>
 </android.support.constraint.ConstraintLayout>

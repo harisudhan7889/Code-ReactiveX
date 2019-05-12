@@ -8,9 +8,11 @@
 * [switchMap](#switchmap-operator)
 * [Difference between all map operators](#difference-between-all-map-operators)
 * [groupBy](#groupby-operator)
+* [scan](#scan-operator)
+* [reduce](#reduce-operator)
 
 #### buffer Operator
-I have called two dependent 
+
 **Actual Definition:**
 
 This operator periodically gather items from an Observable into bundles and emit 
@@ -329,6 +331,12 @@ onComplete
 
 #### groupBy Operator
 
+**Actual Definition:**
+Divide an Observable into a set of Observables that each emit a different subset 
+of items from the original Observable.
+
+**My Understandings with sample:**
+
 This operator divides an Observable into a set of Observables that 
 each emit a different group of items from the original Observable, organised by key.
 
@@ -415,16 +423,213 @@ the key under which the restaurants are stored in a Observable.
    |---|---|---|
    | GroupedObservable1 | Asian | RestaurantObject1(Coal Barbecues) |
    | | | RestaurantObject3(VB Signature) |
-   | | | |
+   |</br> | | |
    | GroupedObservable2 | American | RestaurantObject2(Chili's American Grill & Bar) |
-   | | | |
+   |</br> | | |
    | GroupedObservable3 | Italian | RestaurantObject6(Onesta) |
    | | | RestaurantObject7(Fromage) |
    
  6. Each observable will emit the group of restaurant items one by one after subscribing.
  
-  
+#### scan Operator 
+**Actual Definition:**
+Applies the given `io.reactivex.functions.BiFunction` to a seed value and 
+the first item emitted by a reactive source, then feeds the result of that 
+function application along with the second item emitted by the reactive source 
+into the same function, and so on until all items have been emitted by the 
+reactive source, emitting each intermediate result.
+
+**My Understandings with sample:**
+
+```
+Observable.just(1,2,3,4,5)
+            .scan(object : BiFunction<Int, Int, Int>{
+                override fun apply(previousResult: Int, currentValue: Int): Int {
+                    return previousResult + currentValue
+                }
+            })
+            .subscribe(object : Observer<Int>{
+                override fun onComplete() {
+                    System.out.println("onComplete")
+                }
+
+                override fun onSubscribe(d: Disposable) {
+                    System.out.println("onSubscribe")
+                }
+
+                override fun onNext(result: Int) {
+                    System.out.println("onNext $result")
+                }
+
+                override fun onError(e: Throwable) {
+                    System.out.println("onError $e")
+                }
+            })
+```
+**Output**
+```
+onSubscribe
+onNext 1
+onNext 3
+onNext 6
+onNext 10
+onNext 15
+onComplete
+```
+**Code Analysis**
+1. This operator uses a function that computes a value based on multiple input values, 
+this function is named as `BiFunction`-`BiFunction<Int, Int, Int>`- first two `Int` are the input types
+and last one is the return type.
+2. In the above code example, the apply function inside `BiFunction` has two parameters.
+3. `Observable.just()` will emit the items one by one.
+4. First item will not be processed and will emitted to `onNext()`. 
+5. Now this emitted result will be the first argument for `BiFunction` 
+and the new item emitted from `Observable.just()` will be the second argument.
+6. These two input values are computed inside the `apply()`, which returns the processed result to `onNext()`. 
+7. Again step 5 and 6 will be repeated until the `Observable.just()` emits the last item.
+
    
-       
+   just()---1-->No computation required ---> onNext(1)
+            
+   just()---2-->1(previous result)+ 2 ---> onNext(3)
+
+   just()---3-->3(previous result)+ 3 ---> onNext(6)       
+
+   just()---4-->6(previous result)+ 4 ---> onNext(10)
+
+   just()---5-->10(previous result)+ 5 ---> onNext(15)  
    
-    
+This is a basic example to understand how `scan()` operator works. But still many of 
+them might not be clear at what situation this `scan()` operator can be used in real time. 
+Let us see it more clearly.
+
+In general while coding we try to avoid creating any side effects. 
+A function is considered to have a side effect if it paved way for any 
+unexpected output instead of expected result. 
+Generally the side effect will happen due to modification of a state/variable with a wider scope
+(i.e. global or static)
+
+Let us see a example to understand this more clear.
+
+The problem statement is to display the winners of cricket 
+world cup with their winning count.
+
+**Without using scan()**
+
+```
+private var accumulator = WinningCount()
+
+fun getWorldCupWinCounts() {
+        val winnersList = getWorldCupWinners()
+        val winnersListObservable = Observable.create(object : ObservableOnSubscribe<WinningCount>{
+            override fun subscribe(emitter: ObservableEmitter<WinningCount>) {
+                        winnersList.forEach {
+                            if (accumulator.winningCounts.containsKey(it.countryName)) {
+                                val winningCount = accumulator.winningCounts[it.countryName] ?: 0
+                                accumulator.winningCounts[it.countryName] = winningCount.inc()
+                            } else {
+                                accumulator.winningCounts[it.countryName] = 1
+                            }
+                        }
+                        emitter.onNext(accumulator)
+                        emitter.onComplete()
+                    }
+                })
+        winnersListObservable.subscribe(observer)
+}
+``` 
+
+**Output**
+```
+No of times West Indies had won the Cricket World Cup is 2
+No of times India had won the Cricket World Cup is 2
+No of times Australia had won the Cricket World Cup is 5
+No of times Pakistan had won the Cricket World Cup is 1
+No of times Sri Lanka had won the Cricket World Cup is 1
+```
+While this seems harmless enough until another thread try to access the same method.
+In such case, the output will be wrong like below
+
+**Wrong Output**
+```
+No of times West Indies had won the Cricket World Cup is 4
+No of times India had won the Cricket World Cup is 4
+No of times Australia had won the Cricket World Cup is 10
+No of times Pakistan had won the Cricket World Cup is 2
+No of times Sri Lanka had won the Cricket World Cup is 2
+```
+ This called side effects. 
+ This is because of the global variable `accumulator` that already accumulates the previous results  
+ and not yet cleared.
+ 
+ To avoid this, the variable `accumulator` can be moved inside the function. 
+ But imagine if by mistake if the Observable is subscribed multiple times like below, will
+ results in wrong output.
+ 
+ ```
+ fun getWorldCupWinCounts() {
+         val winnersList = getWorldCupWinners()
+         val accumulator = WinningCount()
+         val winnersListObservable = Observable.create(object : ObservableOnSubscribe<WinningCount>{
+             override fun subscribe(emitter: ObservableEmitter<WinningCount>) {
+                         winnersList.forEach {
+                             if (accumulator.winningCounts.containsKey(it.countryName)) {
+                                 val winningCount = accumulator.winningCounts[it.countryName] ?: 0
+                                 accumulator.winningCounts[it.countryName] = winningCount.inc()
+                             } else {
+                                 accumulator.winningCounts[it.countryName] = 1
+                             }
+                         }
+                         emitter.onNext(accumulator)
+                         emitter.onComplete()
+                     }
+                 })
+         winnersListObservable.subscribe(observer)
+         winnersListObservable.subscribe(observer)
+ }
+ ```
+ To avoid these kind of side effects the **state object** should be not shareable.
+ We can achieve this by `scan()` operator like below.
+ 
+ ```
+ fun getWorldCupWinCounts() {
+         val countries = getWorldCupWinners()
+         Observable.fromIterable(countries)
+             .scan(WinningCount(""), object : BiFunction<WinningCount, WinningCount, WinningCount> {
+                 override fun apply(accumulator: WinningCount, newObject: WinningCount): WinningCount {
+                     if (accumulator.winningCounts.containsKey(newObject.countryName)) {
+                         val winningCount = accumulator.winningCounts[newObject.countryName] ?: 0
+                         accumulator.winningCounts[newObject.countryName] = winningCount.inc()
+                     } else {
+                         accumulator.winningCounts[newObject.countryName] = 1
+                     }
+                     return accumulator
+                 }
+             })
+             .subscribe(object : Observer<WinningCount> {
+                 override fun onComplete() {
+                     System.out.println("onComplete")
+                 }
+ 
+                 override fun onSubscribe(d: Disposable) {
+                     System.out.println("onSubscribe")
+                 }
+ 
+                 override fun onNext(t: WinningCount) {
+                     t.winningCounts.forEach {
+                         System.out.println("onNext: No of times ${it.key} had won the Cricket World Cup is ${it.value}")
+                     }
+                 }
+ 
+                 override fun onError(e: Throwable) {
+                     System.out.println("onError $e")
+                 }
+             })
+ }
+ ```  
+ 
+ In the above code I have not initialized any global 
+ or local shareable state object as I did in the previous examples. 
+ So by using scan operator we can maintain the state.
+      
+#### reduce Operator    

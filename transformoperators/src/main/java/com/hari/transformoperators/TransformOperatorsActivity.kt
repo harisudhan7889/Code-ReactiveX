@@ -35,6 +35,9 @@ class TransformOperatorsActivity : AppCompatActivity(),
         flatMap.setOnClickListener(this)
         switchMap.setOnClickListener(this)
         groupBy.setOnClickListener(this)
+        scan1.setOnClickListener(this)
+        scan2.setOnClickListener(this)
+        reduce.setOnClickListener(this)
     }
 
     private fun getGeoLocations() {
@@ -75,6 +78,15 @@ class TransformOperatorsActivity : AppCompatActivity(),
             }
             groupBy -> {
                 presenter.groupBy(latitude, longitude)
+            }
+            scan1 -> {
+                presenter.scan1()
+            }
+            scan2 -> {
+                presenter.scan2()
+            }
+            reduce -> {
+                presenter.reduce()
             }
         }
     }

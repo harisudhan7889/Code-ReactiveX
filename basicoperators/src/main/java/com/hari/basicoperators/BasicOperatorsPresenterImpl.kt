@@ -23,8 +23,6 @@ import java.util.concurrent.TimeUnit
 class BasicOperatorsPresenterImpl(private val observer: Observer<String?>) {
 
     private var futureTask: FutureTask<String>? = null
-    private var observable: Observable<String>? = null
-
 
     /*RxJava Create operation*/
     fun create(input: String) {
