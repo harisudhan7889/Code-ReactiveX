@@ -439,6 +439,9 @@ function application along with the second item emitted by the reactive source
 into the same function, and so on until all items have been emitted by the 
 reactive source, emitting each intermediate result.
 
+**My Definition:**
+Operator that transforms each item emitted to it with the help of previous processed result.
+
 **My Understandings with sample:**
 
 ```
@@ -558,7 +561,7 @@ No of times Australia had won the Cricket World Cup is 10
 No of times Pakistan had won the Cricket World Cup is 2
 No of times Sri Lanka had won the Cricket World Cup is 2
 ```
- This called side effects. 
+ This is called side effects. 
  This is because of the global variable `accumulator` that already accumulates the previous results  
  and not yet cleared.
  
@@ -630,6 +633,66 @@ No of times Sri Lanka had won the Cricket World Cup is 2
  
  In the above code I have not initialized any global 
  or local shareable state object as I did in the previous examples. 
- So by using scan operator we can maintain the state.
-      
-#### reduce Operator    
+ So by using scan operator we can maintain the state within the scope of the `scan()` 
+ by doing this we reduce or remove any side effects like mutating state.
+ 
+ **Code Analysis:**
+ 
+ 1. `Observable.fromIterable(countries)` will emit the worldcup winners from list one by one.
+ 2. This example differs from the previous example with `scan()` operator because in this example
+ I have passed a initial value to `scan()`, which I did not in the previous example. 
+ 3. If we did not pass any initial value, scan() operator will consider the first emitted item as
+ the initial value. 
+ 4. The initial item `WinningCount("")` will not be processed and will emitted directly to `onNext()`.
+ This initial value will be working as a accumulator which contains a `HashMap<Country,WinningCount>` where every processed results will stored.
+ 5. Now this emitted result will be the first argument for `BiFunction` 
+ and the new item emitted from `Observable.fromIterable()` will be the second argument. 
+ 6. If you see inside the `apply()`, you can understand how the computation actually works.
+ 7. The second argument `newObject` of the `apply` function is the emitted world cup winner.
+ 8. Check whether the country name is already stored in the `HashMap` inside accumulator, 
+ if not add a new entry to the `HashMap` or if already exist, increment the value by one. 
+ 9. This processed accumulator result will be sent to `onNext()`. 
+ 10. Again step 5 to 9 will be repeated until the `Observable.fromIterable()` emits the last item.
+ 
+ So now you should be familiar with `scan()` operator and its usage.
+ The main advantage of `scan()` is to reduce or remove any side effects like mutating state.
+ 
+        
+#### reduce Operator 
+
+This operator works same as the `scan()` operator but only difference is `reduce()` 
+apply a function to each item emitted by an Observable, sequentially, and emit the final value.
+
+```
+Observable.just(1,2,3,4,5)
+            .scan(object : BiFunction<Int, Int, Int>{
+                override fun apply(previousResult: Int, currentValue: Int): Int {
+                    return previousResult + currentValue
+                }
+            })
+            .subscribe(object : SingleObserver<Int>{
+                override fun onSuccess(result: Int) {
+                  System.out.println("onSuccess $result")
+                }
+
+                override fun onSubscribe(d: Disposable) {
+                    System.out.println("onSubscribe")
+                }
+
+                override fun onNext(result: Int) {
+                    System.out.println("onNext $result")
+                }
+
+                override fun onError(e: Throwable) {
+                    System.out.println("onError $e")
+                }
+            })
+```   
+
+**Output**
+```
+onSubscribe
+onSuccess 15
+```
+By seeing the outputs of both `scan()` and `reduce()` you can easily understand the
+difference between both.
