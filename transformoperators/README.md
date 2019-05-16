@@ -11,7 +11,7 @@
 * [scan](#scan-operator)
 * [reduce](#reduce-operator)
 
-#### buffer Operator
+### buffer Operator
 
 **Actual Definition:**
 
@@ -68,7 +68,7 @@ will gathers 2 items and emit those 2 items at a time as a `List<T>`
 
 `java.lang.IllegalArgumentException: count > 0 required but it was 0`
 
-#### map Operator
+### map Operator
 
 **Actual Definition:**
 
@@ -166,7 +166,7 @@ These transformed items are received by the observer.
   Now you can notice the `apply(ApiUser apiUser)` function of the `map()` 
   operator returning the modified item `User` instead of an `Observable<User>`.
   
-#### flatMap Operator
+### flatMap Operator
 
 **Actual Definition:**
 
@@ -242,7 +242,7 @@ its output is `Observable<UserReviewsObject>`.
 This is due to the object structure of the `UserReviewsObject` which contains
 `List<UserReviews>` inside it. 
 
-#### concatMap Operator
+### concatMap Operator
 
 ConcatMap produces the same output as FlatMap but the sequence the data emitted changes.
 `concatMap()` maintains the order of items and waits for the current Observable to 
@@ -259,7 +259,7 @@ execution, network call to fetch reviews for Restaurant 2 will be started.
 
   It can be used when you want to maintain the order of execution.
   
-#### switchMap Operator  
+### switchMap Operator  
 
 SwitchMap is a bit different from FlatMap and ConcatMap. 
 SwitchMap unsubscribe from previous source Observable whenever new item started emitting, 
@@ -320,7 +320,7 @@ onComplete
     finally switchMap emits the final executed Observable.
     ```
 
-#### Difference between all Map operators
+### Difference between all Map operators
 
 
 |  |  map | flatMap | concantMap | switchMap |
@@ -329,7 +329,7 @@ onComplete
 | Return Type | Modified Item | Observable | Observable | Observable |     
 | When can be used?| Consider using map operator where there is an offline operations needs to be done on emitted data. If we got something from server but that doesn’t fulfils our requirement. In that case, Map can be used to alter the emitted data.| Choose flatMap when the order is not important and want to send all the network calls simultaneously. In our case, we have fetched the restaurant details in our location. So in this situation order does not matters.| Choose concatMap when the order is important. If you consider ConcatMap in this scenario, the time takes to fetch the restaurants takes very longer time as the ConcatMap won’t make simultaneous calls in order to maintain item order.|switchMap is best suited when you want to discard the response and consider the latest one. Let’s say you are writing an Instant Search app which sends search query to server each time user types something. In this case multiple requests will be sent to server with multiple queries, but we want to show the result of latest typed query only. For this case, switchMap is best operator to use.|
 
-#### groupBy Operator
+### groupBy Operator
 
 **Actual Definition:**
 Divide an Observable into a set of Observables that each emit a different subset 
@@ -431,7 +431,7 @@ the key under which the restaurants are stored in a Observable.
    
  6. Each observable will emit the group of restaurant items one by one after subscribing.
  
-#### scan Operator 
+### scan Operator 
 **Actual Definition:**
 Applies the given `io.reactivex.functions.BiFunction` to a seed value and 
 the first item emitted by a reactive source, then feeds the result of that 
@@ -658,7 +658,7 @@ No of times Sri Lanka had won the Cricket World Cup is 2
  The main advantage of `scan()` is to reduce or remove any side effects like mutating state.
  
         
-#### reduce Operator 
+### reduce Operator 
 
 This operator works same as the `scan()` operator but only difference is `reduce()` 
 apply a function to each item emitted by an Observable, sequentially, and emit the final value.

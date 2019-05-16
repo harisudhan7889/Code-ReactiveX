@@ -1,27 +1,53 @@
 # Code ReactiveX 
 My coding journey with **RxJava+RxAndroid**
 
+Main motive of an developer is to improve the user experience. 
+As a developer we want to make our application more responsive. 
+We want to deliver a smooth user experience to our users without freezing the main thread.
+
+To keep the main thread free we need to do a lot of heavy and time-consuming work 
+we want to do in the background. 
+Doing heavy work in the background is called asynchronous task. 
+
 ## ReactiveX?
 
-* ReactiveX is a programming model, where data flows emitted by one component (eg. Click Event) will be 
+* ReactiveX is a programming model, where data flows emitted will be 
 processed by set of **RX Functions** which will pass the changes to 
-another component those are registered to receive the changed data.
+components those are registered to receive the changed data.
 
-* In ReactiveX data flows are considered as streams which means continues flow without storing anything.
+* RX works based on Observer Pattern. 
+RX = OBSERVABLE + OBSERVER + SCHEDULERS
 
-* A Realtime Scenario: Consider the streams are the streets where cars are present but just passing by, 
-they are not really stored there. When we look to the street we only see the car just passing by. 
-This continuous observation that happens once the stream is defined. But streams can do more than that. 
-If the driver is a wanted criminal then the police might stop him, and the car basically gets filtered from the stream(filter function).
+* Reactive programming is programming with asynchronous data flows plus 
+you are given with an amazing toolbox of functions to create, transforms, do math operations etc. with the data stream(continuous flow of data).
+ 
+## How Asynchronous task achieved before ReactiveX in Android?
+Before ReactiveX, to do a time consuming tasks at background **Android's AsyncTask** 
+will be used. But this have certain disadvantages.
 
+* Android's AsyncTask is not  binded to an Activity's Life Cycle, which means the running 
+AsyncTask will not be destroyed when a activity gets destroyed. Practical example is 
+suppose an AsyncTask is already running and the user rotates the screen, 
+then another Activity will created and a new AsyncTask is created but leaving the previous 
+**AsyncTask** not destroyed. This will lead to more memory consumption.
 
-* ReactiveX is combination of the best ideas from the Observer pattern, the Iterator patter and functional programming.
-    ```
-    RX = Observer pattern + iterator pattern + functional programming
-    ```
-    
+* Can lead to Memory Leaks
 
-RxJava is a JVM implementation of ReactiveX. Let see about all the RxJava Operators
+* Difficult to chain multiple sequential network calls, which will make your code more messy.
+
+## How Reactive Programming solves the problems that we faced in AsyncTask?
+
+* RX provides the control to us. We can unsubscribe the **Observer** whenever needed. So when the
+activity or fragment gets destroyed, we can unsubscribe from the **Observer**. 
+
+* Avoid memory leaks.
+
+* Easy and sophisticated thread handling mechanism. 
+So chaining of sequential network or time consuming calls is made easy.
+ 
+
+RxJava is a JVM implementation of ReactiveX. Let see all about RxJava and its Operators
 
 1. [Basic Operators](basicoperators/README.md)
-2. [Transform Operators](transformoperators/README.md)
+2. [Observable and Observer Types](observables/README.md)
+3. [Transform Operators](transformoperators/README.md)
