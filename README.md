@@ -44,8 +44,11 @@ activity or fragment gets destroyed, we can unsubscribe from the **Observer**.
 
 * Easy and sophisticated thread handling mechanism. 
 So chaining of sequential network or time consuming calls is made easy.
- 
 
+* We can solve so many complex use-cases with the help of the RxJava. 
+It enables us to do complex things very simple. It provides us the power.
+
+ 
 RxJava is a JVM implementation of ReactiveX. Let see all about RxJava and its Operators
 
 1. [Basic Operators](basicoperators/README.md)
