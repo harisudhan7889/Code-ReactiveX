@@ -179,6 +179,7 @@ map over asynchronous operations.
         val endPoint = Api.getClient().create(ApiEndPoint::class.java)
         val observable = endPoint.getRestaurantsAtLocation(latitude, longitude)
         observable
+            .flatMap { Observable.fromIterable(it.restaurants) }
             .flatMap(object : Function<RestaurantObject, Observable<UserReviewsObject>>{
             override fun apply(restaurantObject: RestaurantObject): Observable<UserReviewsObject> {
                return endPoint.getRestaurantReview(restaurantObject.restaurant.id)
@@ -665,7 +666,7 @@ apply a function to each item emitted by an Observable, sequentially, and emit t
 
 ```
 Observable.just(1,2,3,4,5)
-            .scan(object : BiFunction<Int, Int, Int>{
+            .reduce(object : BiFunction<Int, Int, Int>{
                 override fun apply(previousResult: Int, currentValue: Int): Int {
                     return previousResult + currentValue
                 }
