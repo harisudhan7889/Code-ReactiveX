@@ -156,8 +156,6 @@ works.
    If you see the output, only 128 items gets emitted to the observer 
    and other items got dropped. 
    
-   java.lang.IllegalArgumentException: n > 0 required but it was 0
-   
    **BackpressureStrategy.LATEST:**
    
    It emits until the buffer is full and waits until it becomes available.
@@ -418,3 +416,8 @@ works.
   
   In our example, I have requested for one item at the start and after that one item got emitted to `onNext()`, 
   I have requested for the another one. 
+  
+  `request(n)` - n should be greater than 0, otherwise following exception will be the thrown.
+  ```
+  java.lang.IllegalArgumentException: n > 0 required but it was 0
+  ```
