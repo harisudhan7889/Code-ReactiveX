@@ -1,6 +1,6 @@
-package com.hari.transformoperators.network
+package com.hari.api.network
 
-import com.hari.transformoperators.BuildConfig
+import com.hari.api.BuildConfig
 import okhttp3.Interceptor
 import okhttp3.Response
 

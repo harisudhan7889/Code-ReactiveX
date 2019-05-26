@@ -1,4 +1,4 @@
-package com.hari.transformoperators.model
+package com.hari.api.model
 
 /**
  * @author Hari Hara Sudhan.N

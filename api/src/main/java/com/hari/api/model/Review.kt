@@ -1,4 +1,4 @@
-package com.hari.transformoperators.model
+package com.hari.api.model
 
 import com.google.gson.annotations.SerializedName
 

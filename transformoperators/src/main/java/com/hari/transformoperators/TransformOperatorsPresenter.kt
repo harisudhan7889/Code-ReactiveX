@@ -2,15 +2,19 @@ package com.hari.transformoperators
 
 import android.app.ProgressDialog
 import android.content.Context
-import com.hari.transformoperators.model.*
-import com.hari.transformoperators.network.Api
-import com.hari.transformoperators.network.ApiEndPoint
-import io.reactivex.*
+import com.hari.api.model.RestaurantObject
+import com.hari.api.model.UserReviews
+import com.hari.api.model.UserReviewsObject
+import com.hari.api.model.WinningCount
+import com.hari.api.network.Api
+import com.hari.api.network.ApiEndPoint
+import io.reactivex.Observable
+import io.reactivex.Observer
+import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function
-import io.reactivex.observables.GroupedObservable
 import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 

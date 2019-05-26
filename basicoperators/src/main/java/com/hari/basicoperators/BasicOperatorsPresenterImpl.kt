@@ -1,4 +1,4 @@
-package com.hari.rxjava.operators.basic
+package com.hari.basicoperators
 
 import android.text.TextUtils
 import io.reactivex.Observable
@@ -6,11 +6,9 @@ import io.reactivex.ObservableOnSubscribe
 import io.reactivex.ObservableSource
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BooleanSupplier
 import io.reactivex.functions.Function
 import io.reactivex.schedulers.Schedulers
-import org.reactivestreams.Publisher
 import java.util.*
 import java.util.concurrent.Callable
 import java.util.concurrent.FutureTask

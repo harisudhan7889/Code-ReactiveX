@@ -48,4 +48,6 @@ dependencies {
     // okHttp 3
     implementation "com.squareup.okhttp3:okhttp:"+ rootProject.ext.okHttpVersion
     implementation "com.squareup.okhttp3:logging-interceptor:"+ rootProject.ext.okHttpVersion
+
+    implementation project(path: ':api')
 }

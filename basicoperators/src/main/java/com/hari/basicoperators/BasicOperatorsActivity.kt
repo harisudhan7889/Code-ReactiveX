@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.text.method.ScrollingMovementMethod
 import android.view.View
-import com.hari.rxjava.operators.basic.BasicOperatorsPresenterImpl
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.view_basic_operators.*

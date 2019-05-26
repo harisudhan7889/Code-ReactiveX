@@ -1,17 +1,21 @@
 package com.hari.observables
 
-import io.reactivex.BackpressureOverflowStrategy
-import io.reactivex.BackpressureStrategy
-import io.reactivex.Observable
-import io.reactivex.Observer
+import android.app.ProgressDialog
+import android.content.Context
+import com.hari.api.model.Restaurants
+import com.hari.api.network.Api
+import com.hari.api.network.ApiEndPoint
+import io.reactivex.*
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Action
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subscribers.DisposableSubscriber
-import org.reactivestreams.Subscriber
-import org.reactivestreams.Subscription
 
-class ObservablesPresenter {
+/**
+ * @author Hari Hara Sudhan.N
+ */
+class ObservablesPresenter(private val context: Context) {
 
     fun simpleObservable() {
         Observable.just(1, 2, 3)
@@ -41,6 +45,7 @@ class ObservablesPresenter {
             .subscribe(object : DisposableSubscriber<Int>() {
                 override fun onStart() {
                     System.out.println("onStart")
+                    request(1)
                 }
 
                 override fun onComplete() {
@@ -49,6 +54,7 @@ class ObservablesPresenter {
 
                 override fun onNext(value: Int?) {
                     System.out.println("onNext $value")
+                    request(1)
                 }
 
                 override fun onError(error: Throwable?) {
@@ -244,4 +250,29 @@ class ObservablesPresenter {
             })
     }
 
+    fun singleObservable(latitude: Double, longitude: Double) {
+        val progressBar = ProgressDialog(context)
+        val endPoint = Api.getClient().create(ApiEndPoint::class.java)
+        val single = endPoint.getRestaurantsAtLocationSingle(latitude, longitude, 0, 3)
+        single
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(object : SingleObserver<Restaurants> {
+                override fun onSuccess(result: Restaurants) {
+                    progressBar.dismiss()
+                    System.out.println("OnSuccess ${result.restaurants.size}")
+                }
+
+                override fun onSubscribe(d: Disposable) {
+                    progressBar.show()
+                    System.out.println("onSubscribe")
+                }
+
+                override fun onError(e: Throwable) {
+                    progressBar.dismiss()
+                    System.out.println("onError $e")
+                }
+
+            })
+    }
 }
