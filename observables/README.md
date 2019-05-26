@@ -12,7 +12,7 @@ As there are different types of Observables, there are different types of Observ
 
 1. [Observer](#observer)
 2. [SingleObserver](#single-observer)
-3. CompletableObserver
+3. [CompletableObserver](#completableobserver)
 4. MaybeObserver
 
 Let’s see how they are different and when to use which one. 
