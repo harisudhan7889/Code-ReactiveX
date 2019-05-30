@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/RxJava.iml" filepath="$PROJECT_DIR$/RxJava.iml" />
-      <module fileurl="file://$PROJECT_DIR$/RxJava.iml" filepath="$PROJECT_DIR$/RxJava.iml" />
       <module fileurl="file://$PROJECT_DIR$/api/api.iml" filepath="$PROJECT_DIR$/api/api.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/basicoperators/basicoperators.iml" filepath="$PROJECT_DIR$/basicoperators/basicoperators.iml" />

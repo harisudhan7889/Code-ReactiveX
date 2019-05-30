@@ -697,3 +697,5 @@ onSuccess 15
 ```
 By seeing the outputs of both `scan()` and `reduce()` you can easily understand the
 difference between both.
+
+

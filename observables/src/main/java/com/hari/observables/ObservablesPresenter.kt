@@ -275,4 +275,34 @@ class ObservablesPresenter(private val context: Context) {
 
             })
     }
+
+    fun maybe() {
+        val progressBar = ProgressDialog(context)
+        val endPoint = Api.getClient().create(ApiEndPoint::class.java)
+        val maybe = endPoint.getRestaurantsAtLocationMaybe(0.0, 0.0, 0, 3)
+        maybe.filter { it.restaurants.isNotEmpty() }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : MaybeObserver<Restaurants>{
+
+                    override fun onSuccess(result: Restaurants) {
+                        System.out.println("onSuccess $result")
+                    }
+
+                    override fun onComplete() {
+                        progressBar.dismiss()
+                        System.out.println("onComplete")
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        progressBar.show()
+                        System.out.println("onSubscribe")
+                    }
+
+                    override fun onError(e: Throwable) {
+                        progressBar.dismiss()
+                        System.out.println("onError $e")
+                    }
+                })
+    }
 }

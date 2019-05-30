@@ -43,6 +43,7 @@ class ObservablesActivity : AppCompatActivity(), View.OnClickListener {
         bufferWithOverFlow.setOnClickListener(this)
         bufferOverflowStrategy.setOnClickListener(this)
         single.setOnClickListener(this)
+        maybe.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
@@ -76,6 +77,9 @@ class ObservablesActivity : AppCompatActivity(), View.OnClickListener {
             }
             single->{
                 presenter.singleObservable(latitude, longitude)
+            }
+            maybe->{
+                presenter.maybe()
             }
         }
     }

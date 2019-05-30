@@ -8,11 +8,10 @@ import com.hari.api.model.UserReviewsObject
 import com.hari.api.model.WinningCount
 import com.hari.api.network.Api
 import com.hari.api.network.ApiEndPoint
-import io.reactivex.Observable
-import io.reactivex.Observer
-import io.reactivex.SingleObserver
+import io.reactivex.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import io.reactivex.functions.Action
 import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function
 import io.reactivex.schedulers.Schedulers

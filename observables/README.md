@@ -13,7 +13,7 @@ As there are different types of Observables, there are different types of Observ
 1. [Observer](#observer)
 2. [SingleObserver](#single-observer)
 3. [CompletableObserver](#completableobserver)
-4. MaybeObserver
+4. [MaybeObserver](#maybeobserver)
 
 Let’s see how they are different and when to use which one. 
 
@@ -576,8 +576,8 @@ This observer is used handle `Completable`.
 `CompletableObserver` have three methods within it.
 
 1. onSubscribe
-2. onComplete
-3. onError
+2. onError
+3. onComplete
 
 ```
 val endPoint = Api.getClient().create(ApiEndPoint::class.java)
@@ -616,6 +616,66 @@ Maybe is an `Observable` type that may emit any of the following
 
 It’s like a union of Single and Completable.
 
+### MaybeObserver
 
- 
+This observer is used handle `Maybe`.
+`MaybeObserver` have four methods within it.
+
+1. onSubscribe
+2. onSuccess
+3. onError
+4. onComplete
+
+```
+val progressBar = ProgressDialog(context)
+val endPoint = Api.getClient().create(ApiEndPoint::class.java)
+val maybe = endPoint.getRestaurantsAtLocationMaybe(0.0, 0.0, 0, 3)
+    maybe.filter { it.restaurants.isNotEmpty() }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : MaybeObserver<Restaurants>{
+
+                    override fun onSuccess(result: Restaurants) {
+                        System.out.println("onSuccess $result")
+                    }
+
+                    override fun onComplete() {
+                        progressBar.dismiss()
+                        System.out.println("onComplete")
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        progressBar.show()
+                        System.out.println("onSubscribe")
+                    }
+
+                    override fun onError(e: Throwable) {
+                        progressBar.dismiss()
+                        System.out.println("onError $e")
+                    }
+                })
+```
+
+**Output**
+```
+onSubscribe
+onComplete
+```
+
+**Code Analysis**
+
+1. In the above code, I am hitting the network service to get the `Restaurants` at a particular location coordinates.
+2. We might not sure whether restaurants will be available at that location.
+3. If restaurants are not available in the location then we would get a `Restaurants` 
+object with empty restaurant array.
+4. `onSuccess()` is not necessary in this scenario to update the UI.
+5. Here is the place where `MaybeObservable` and `MaybeObserver` plays an important role.
+6. If you see the above sample, I have used `filter` operator to check whether restaurants 
+are not empty. 
+7. So if restaurants are available then `onSuccess()` will be called otherwise `onComplete()` will be called
+directly.
+
+
+
+
 
