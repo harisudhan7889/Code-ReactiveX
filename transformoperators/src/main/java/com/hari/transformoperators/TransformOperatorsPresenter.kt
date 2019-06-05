@@ -116,6 +116,47 @@ class TransformOperatorsPresenter(private val context: Context) {
             })
     }
 
+    fun flatMapMaybe(latitude: Double, longitude: Double) {
+        val progressBar = ProgressDialog(context)
+        val endPoint = Api.getClient().create(ApiEndPoint::class.java)
+        val observable = endPoint.getRestaurantsAtLocation(latitude, longitude, 0, 3)
+        observable
+                .flatMap { Observable.fromIterable(it.restaurants) }
+                .flatMapMaybe(object : Function<RestaurantObject, MaybeSource<List<UserReviews>>> {
+                    override fun apply(restaurantObject: RestaurantObject): MaybeSource<List<UserReviews>> {
+                        val maybe = endPoint.getRestaurantReviewMaybe(restaurantObject.restaurant.id, 0, 3)
+                        val userReview = maybe.blockingGet()
+                        return if(userReview.reviewsCount > 0) {
+                            Maybe.just(userReview.userReviews)
+                        } else {
+                            Maybe.empty()
+                        }
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : Observer<List<UserReviews>> {
+                    override fun onComplete() {
+                        progressBar.dismiss()
+                        System.out.println("flatMapMaybe onComplete")
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        progressBar.show()
+                        System.out.println("flatMapMaybe onSubscribe")
+                    }
+
+                    override fun onNext(t: List<UserReviews>) {
+                        System.out.println("flatMapMaybe onNext ${t.count()}")
+                    }
+
+                    override fun onError(error: Throwable) {
+                        progressBar.dismiss()
+                        System.out.println("flatMapMaybe onError $error")
+                    }
+                })
+    }
+
     fun switchMap() {
         val valueArray: Array<Int> = arrayOf(1, 2, 3, 4, 5, 6)
         Observable.fromArray(*valueArray)

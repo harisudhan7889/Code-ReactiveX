@@ -38,6 +38,7 @@ class TransformOperatorsActivity : AppCompatActivity(),
         scan1.setOnClickListener(this)
         scan2.setOnClickListener(this)
         reduce.setOnClickListener(this)
+        flatMapMaybe.setOnClickListener(this)
     }
 
     private fun getGeoLocations() {
@@ -72,6 +73,9 @@ class TransformOperatorsActivity : AppCompatActivity(),
             }
             flatMap -> {
                 presenter.flatMap(latitude, longitude)
+            }
+            flatMapMaybe -> {
+                presenter.flatMapMaybe(latitude, longitude)
             }
             switchMap -> {
                 presenter.switchMap()

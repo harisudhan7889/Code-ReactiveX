@@ -10,6 +10,9 @@
 * [groupBy](#groupby-operator)
 * [scan](#scan-operator)
 * [reduce](#reduce-operator)
+* [flatMapCompletable](#flatmapcompletable)
+* [concatMapCompletable](#concatmapcompletable)
+* [concatMapCompletableDelayError](#concatmapcompletabledelayerror)
 
 ### buffer Operator
 
@@ -698,4 +701,184 @@ onSuccess 15
 By seeing the outputs of both `scan()` and `reduce()` you can easily understand the
 difference between both.
 
+
+Have a look at [Obseravable Types](../observables/README.md) 
+to understand the below `Transform Operators`. 
+ 
+### flatMapCompletable
+
+`flatMap + Completable = flatMapCompletable`. This type of `flatMap` also applies a function 
+on each emitted item which can only emit either a completion or error signal. Suppose if I want to do
+a batch update where the result is not expected, then I can make use of this operator.
+
+```
+val progressBar = ProgressDialog(context)
+val endPoint = Api.getClient().create(ApiEndPoint::class.java)
+val observable = endPoint.getRestaurantsAtLocation(latitude, longitude, 0, 3)
+        observable
+                .flatMap { Observable.fromIterable(it.restaurants) }
+                .flatMapCompletable(object : Function<RestaurantObject,CompletableSource>{
+                    override fun apply(restaurantObject: RestaurantObject): CompletableSource {
+                        return endPoint.updateRestaurantDetail(restaurantObject.id, "New Name")
+                    }
+                }).subscribe(object : CompletableObserver{
+                    override fun onComplete() {
+                        progressBar.dismiss()
+                        System.out.println("onComplete")
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        progressBar.show()
+                        System.out.println("onSubscribe")
+                    }
+
+                    override fun onError(error: Throwable) {
+                        progressBar.dismiss()
+                        System.out.println("onError $error")  
+                    }
+                })
+```
+
+**Output**
+
+```
+onSubscribe
+onComplete
+```
+
+**Code Analysis**
+
+1. In the above code sample, I have got the list of near by restaurants from a remote service.
+2. I am iterating the restaurants and these restaurant details are given to `flatMapCompletable`
+one by one.
+3. You can see the `apply` function inside the `flatMapCompletable`, where the update operation
+is done.
+4. Though we don't need any result back, `flatMapCompletable` is used here.
+
+### concatMapCompletable
+`concatMap + Completable = concatMapCompletable`. ConcatMapCompletable produces the same output as 
+FlatMapCompletable but the sequence the data emitted changes. concatMapCompletable() maintains the order of items 
+and waits for the current Observable to complete its job before emitting the next one.
+
+```
+val progressBar = ProgressDialog(context)
+val endPoint = Api.getClient().create(ApiEndPoint::class.java)
+val observable = endPoint.getRestaurantsAtLocation(latitude, longitude, 0, 3)
+        observable
+                .flatMap { Observable.fromIterable(it.restaurants) }
+                .concatMapCompletable(object : Function<RestaurantObject,CompletableSource>{
+                    override fun apply(restaurantObject: RestaurantObject): CompletableSource {
+                        return endPoint.updateRestaurantDetail(restaurantObject.id, "New Name")
+                    }
+                }).subscribe(object : CompletableObserver{
+                    override fun onComplete() {
+                        progressBar.dismiss()
+                        System.out.println("onComplete")
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        progressBar.show()
+                        System.out.println("onSubscribe")
+                    }
+
+                    override fun onError(error: Throwable) {
+                        progressBar.dismiss()
+                        System.out.println("onError $error")  
+                    }
+                })
+```
+
+### concatMapCompletableDelayError
+This is same as `concatMapCompletable` but the one extra adds-on is 
+any errors from the sources will be delayed until all of them terminate.  
+
+```
+val progressBar = ProgressDialog(context)
+val endPoint = Api.getClient().create(ApiEndPoint::class.java)
+val observable = endPoint.getRestaurantsAtLocation(latitude, longitude, 0, 3)
+        observable
+                .flatMap { Observable.fromIterable(it.restaurants) }
+                .concatMapCompletableDelayError(object : Function<RestaurantObject,CompletableSource>{
+                    override fun apply(restaurantObject: RestaurantObject): CompletableSource {
+                        return endPoint.updateRestaurantDetail(restaurantObject.id, "New Name")
+                    }
+                }).subscribe(object : CompletableObserver{
+                    override fun onComplete() {
+                        progressBar.dismiss()
+                        System.out.println("onComplete")
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        progressBar.show()
+                        System.out.println("onSubscribe")
+                    }
+
+                    override fun onError(error: Throwable) {
+                        progressBar.dismiss()
+                        System.out.println("onError $error")  
+                    }
+                })
+```
+
+From the above example, let us assume one of the updates got failed and you want to log the error
+at the last after all other updates gets completed then you can use `concatMapCompletableDelayError`. 
+Errors will be thrown at the last after all other sources completes its process.
+
+### flatMapMaybe
+`FlatMap` which has capability to emit **result, no result 
+or error result** for each item emitted by a reactive source is called `FlatMapMaybe`. 
+
+```
+val progressBar = ProgressDialog(context)
+val endPoint = Api.getClient().create(ApiEndPoint::class.java)
+val observable = endPoint.getRestaurantsAtLocation(latitude, longitude, 0, 3)
+        observable
+                .flatMap { Observable.fromIterable(it.restaurants) }
+                .flatMapMaybe(object : Function<RestaurantObject, MaybeSource<List<UserReviews>>> {
+                    override fun apply(restaurantObject: RestaurantObject): MaybeSource<List<UserReviews>> {
+                        val maybe = endPoint.getRestaurantReviewMaybe(restaurantObject.restaurant.id, 0, 3)
+                        val userReview = maybe.blockingGet()
+                        return if(userReview.reviewsCount > 0) {
+                            Maybe.just(userReview.userReviews)
+                        } else {
+                            Maybe.empty()
+                        }
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : Observer<List<UserReviews>> {
+                    override fun onComplete() {
+                        progressBar.dismiss()
+                        System.out.println("onComplete")
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        progressBar.show()
+                        System.out.println("onSubscribe")
+                    }
+
+                    override fun onNext(t: List<UserReviews>) {
+                        System.out.println("onNext ${t.count()}")
+                    }
+
+                    override fun onError(error: Throwable) {
+                        progressBar.dismiss()
+                        System.out.println("onError $error")
+                    }
+                })
+```
+
+**Output**
+```
+onSubscribe
+onNext 1
+onNext 1
+onComplete
+```
+
+**Code Analysis**
+
+
+ 
 

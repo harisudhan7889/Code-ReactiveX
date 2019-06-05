@@ -66,4 +66,20 @@
             android:layout_marginTop="12dp" app:layout_constraintTop_toBottomOf="@+id/switchMap"
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
             app:layout_constraintHorizontal_bias="0.0"/>
+
+    <Button
+        android:id="@+id/flatMapMaybe"
+        android:layout_width="wrap_content"
+        android:layout_height="58dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="Flat Map Maybe"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.009"
+        app:layout_constraintStart_toEndOf="@+id/reduce"
+        app:layout_constraintTop_toBottomOf="@+id/groupBy"
+        app:layout_constraintVertical_bias="0.007" />
 </android.support.constraint.ConstraintLayout>
