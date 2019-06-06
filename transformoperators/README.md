@@ -13,6 +13,9 @@
 * [flatMapCompletable](#flatmapcompletable)
 * [concatMapCompletable](#concatmapcompletable)
 * [concatMapCompletableDelayError](#concatmapcompletabledelayerror)
+* [flatMapMaybe](#flatmapmaybe)
+* [concatMapMaybe](#concatmapmaybe)
+* [flatMapIterable](#flatmapiterable) 
 
 ### buffer Operator
 
@@ -825,7 +828,7 @@ at the last after all other updates gets completed then you can use `concatMapCo
 Errors will be thrown at the last after all other sources completes its process.
 
 ### flatMapMaybe
-`FlatMap` which has capability to emit **result, no result 
+`FlatMap + Maybe = FlatMapMaybe`. FlatMap which has capability to emit **result, no result 
 or error result** for each item emitted by a reactive source is called `FlatMapMaybe`. 
 
 ```
@@ -879,6 +882,139 @@ onComplete
 
 **Code Analysis**
 
+1. The objective of the above example is to show the review counts of the restaurants near by your location.
+2. `getRestaurantsAtLocation` function will get the restaurants near by.
+3. The restaurants are iterated and given to `flatMapMaybe` one by one. 
+4. If you see the `apply` function inside `flatMapMaybe`, I have called another network call
+to fetch the reviews of the respective restaurant.  
+5. If there is no review for a restaurant then no need of passing it to `onNext`. 
+6. Reviews count **Maybe** zero, no one knows until we get the response.
+7. So I have made a conditional check, if reviews are available then they are returned using `Maybe.just(userReview.userReviews)` 
+or `Maybe.empty()` is used to return nothing. 
+8. If I used `flatMap` instead of `flatMapMaybe` for the same situation I would get the following output
 
- 
+```
+onSubscribe
+onNext 1
+onNext 0
+onNext 1
+onComplete
+```
+
+### concatMapMaybe
+`ConcatMap + Maybe = ConcatMapMaybe`.
+concatMapMaybe produces the same output as 
+flatMapMaybe but the sequence the data emitted changes. concatMapMaybe() maintains the order of items 
+and waits for the current Observable to complete its job before emitting the next one.
+
+```
+val progressBar = ProgressDialog(context)
+val endPoint = Api.getClient().create(ApiEndPoint::class.java)
+val observable = endPoint.getRestaurantsAtLocation(latitude, longitude, 0, 3)
+        observable
+                .flatMap { Observable.fromIterable(it.restaurants) }
+                .concatMapMaybe(object : Function<RestaurantObject, MaybeSource<List<UserReviews>>> {
+                    override fun apply(restaurantObject: RestaurantObject): MaybeSource<List<UserReviews>> {
+                        val maybe = endPoint.getRestaurantReviewMaybe(restaurantObject.restaurant.id, 0, 3)
+                        val userReview = maybe.blockingGet()
+                        return if(userReview.reviewsCount > 0) {
+                            Maybe.just(userReview.userReviews)
+                        } else {
+                            Maybe.empty()
+                        }
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : Observer<List<UserReviews>> {
+                    override fun onComplete() {
+                        progressBar.dismiss()
+                        System.out.println("onComplete")
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        progressBar.show()
+                        System.out.println("onSubscribe")
+                    }
+
+                    override fun onNext(t: List<UserReviews>) {
+                        System.out.println("onNext ${t.count()}")
+                    }
+
+                    override fun onError(error: Throwable) {
+                        progressBar.dismiss()
+                        System.out.println("onError $error")
+                    }
+                })
+```
+
+### flatMapIterable
+
+This operator converts the list of object to a Iterable of streams so that each item in
+the list will be emitted one by one to its observer.
+
+Let us take the above example where I have used `.flatMap { Observable.fromIterable(it.restaurants) }`
+to convert the list of `RestaurantObject` to a Iterable of streams. Instead of doing
+that you can directly use `flatMapIterable{it.restaurants}`. 
+
+**When to use?**
+
+If you have a list already and you want to convert it to a iterable of streams then you can do as follow
+```
+val list = Arrays.asList("A","B","C","D","E","F")
+Observable.fromIterable(list)
+```
+So this will emit the items one by one.
+
+But suppose if you are getting a list of object in a network response and 
+you want to iterate and emit, then you can make use of `flatMapIterable`. 
+
+```
+val progressBar = ProgressDialog(context)
+val endPoint = Api.getClient().create(ApiEndPoint::class.java)
+val observable = endPoint.getRestaurantsAtLocation(latitude, longitude, 0, 3)
+        observable
+                .flatMapIterable { it.restaurants }
+                .flatMapMaybe(object : Function<RestaurantObject, MaybeSource<List<UserReviews>>> {
+                    override fun apply(restaurantObject: RestaurantObject): MaybeSource<List<UserReviews>> {
+                        val maybe = endPoint.getRestaurantReviewMaybe(restaurantObject.restaurant.id, 0, 3)
+                        val userReview = maybe.blockingGet()
+                        return if(userReview.reviewsCount > 0) {
+                            Maybe.just(userReview.userReviews)
+                        } else {
+                            Maybe.empty()
+                        }
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : Observer<List<UserReviews>> {
+                    override fun onComplete() {
+                        progressBar.dismiss()
+                        System.out.println("flatMapMaybe onComplete")
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        progressBar.show()
+                        System.out.println("flatMapMaybe onSubscribe")
+                    }
+
+                    override fun onNext(t: List<UserReviews>) {
+                        System.out.println("flatMapMaybe onNext ${t.count()}")
+                    }
+
+                    override fun onError(error: Throwable) {
+                        progressBar.dismiss()
+                        System.out.println("flatMapMaybe onError $error")
+                    }
+                })
+```   
+
+In this above example, I have used `flatMapIterable` to iterate and emit the restaurants
+that I got through a network call. In this case I can't use `Observable.fromIterable()` because 
+this is a **create operator** used to create a new observable but I already have a observable created 
+for a network call. So I must use some **Transform Operator** to convert list to Iterable of streams 
+so that each item in the list will be emitted one by one to its observer. So using `flatMapIterable`
+we achieved it.
+
 

@@ -121,7 +121,7 @@ class TransformOperatorsPresenter(private val context: Context) {
         val endPoint = Api.getClient().create(ApiEndPoint::class.java)
         val observable = endPoint.getRestaurantsAtLocation(latitude, longitude, 0, 3)
         observable
-                .flatMap { Observable.fromIterable(it.restaurants) }
+                .flatMapIterable{it.restaurants}
                 .flatMapMaybe(object : Function<RestaurantObject, MaybeSource<List<UserReviews>>> {
                     override fun apply(restaurantObject: RestaurantObject): MaybeSource<List<UserReviews>> {
                         val maybe = endPoint.getRestaurantReviewMaybe(restaurantObject.restaurant.id, 0, 3)
