@@ -58,14 +58,22 @@
             android:layout_marginTop="16dp" app:layout_constraintTop_toBottomOf="@+id/flatMap"
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
             app:layout_constraintHorizontal_bias="1.0"/>
+
     <Button
-            android:text="reduce"
-            android:layout_width="wrap_content"
-            android:layout_height="55dp"
-            android:id="@+id/reduce" app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
-            android:layout_marginTop="12dp" app:layout_constraintTop_toBottomOf="@+id/switchMap"
-            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-            app:layout_constraintHorizontal_bias="0.0"/>
+        android:id="@+id/reduce"
+        android:layout_width="wrap_content"
+        android:layout_height="55dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="reduce"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.003"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/switchMap"
+        app:layout_constraintVertical_bias="0.005" />
 
     <Button
         android:id="@+id/flatMapMaybe"
@@ -82,4 +90,68 @@
         app:layout_constraintStart_toEndOf="@+id/reduce"
         app:layout_constraintTop_toBottomOf="@+id/groupBy"
         app:layout_constraintVertical_bias="0.007" />
+
+    <Button
+        android:id="@+id/windowOS"
+        android:layout_width="131dp"
+        android:layout_height="57dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="Window Of Size"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.204"
+        app:layout_constraintStart_toEndOf="@+id/flatMapMaybe"
+        app:layout_constraintTop_toBottomOf="@+id/scan1"
+        app:layout_constraintVertical_bias="0.011" />
+
+    <Button
+        android:id="@+id/windowOT"
+        android:layout_width="110dp"
+        android:layout_height="59dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="376dp"
+        android:text="Window of time"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.003"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/reduce"
+        app:layout_constraintVertical_bias="0.153" />
+
+    <Button
+        android:id="@+id/windowSkip"
+        android:layout_width="115dp"
+        android:layout_height="58dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="Window Skip"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/windowOT"
+        app:layout_constraintTop_toBottomOf="@+id/flatMapMaybe"
+        app:layout_constraintVertical_bias="0.03" />
+
+    <Button
+        android:id="@+id/cast"
+        android:layout_width="128dp"
+        android:layout_height="59dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="Cast"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.4"
+        app:layout_constraintStart_toEndOf="@+id/windowSkip"
+        app:layout_constraintTop_toBottomOf="@+id/windowOS"
+        app:layout_constraintVertical_bias="0.028" />
 </android.support.constraint.ConstraintLayout>

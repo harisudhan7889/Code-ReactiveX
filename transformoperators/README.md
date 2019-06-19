@@ -16,6 +16,8 @@
 * [flatMapMaybe](#flatmapmaybe)
 * [concatMapMaybe](#concatmapmaybe)
 * [flatMapIterable](#flatmapiterable) 
+* [concatMapIterable](#concatmapiterable)
+* [window](#window)
 
 ### buffer Operator
 
@@ -1014,7 +1016,249 @@ In this above example, I have used `flatMapIterable` to iterate and emit the res
 that I got through a network call. In this case I can't use `Observable.fromIterable()` because 
 this is a **create operator** used to create a new observable but I already have a observable created 
 for a network call. So I must use some **Transform Operator** to convert list to Iterable of streams 
-so that each item in the list will be emitted one by one to its observer. So using `flatMapIterable`
-we achieved it.
+so that each item in the list will be emitted one by one to its observer. 
+This can be achieved using `flatMapIterable`. 
 
+### concatMapIterable
 
+Both `flatMapIterable` and `concatMapIterable` does the same functionality. 
+This was just aliased for better discoverability in the API.
+
+### window
+
+This operator divides a Observable into multiple Observables, these divided observables
+are called as windows. This split is done based on two calculative factors.
+
+1. Size
+2. Time  
+
+**Size:**
+```
+var count = 1
+Observable.just("1", "2", "3", "4", "5")
+                .window(2)
+                .flatMap {
+                    System.out.println("Observable $count")
+                    count++
+                    it
+                }
+                .subscribe(object : Observer<String> {
+                    override fun onComplete() {
+                        System.out.println("onComplete")
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        System.out.println("onSubscribe")
+                    }
+
+                    override fun onNext(result: String) {
+                        System.out.println("onNext $result")
+                    }
+
+                    override fun onError(error: Throwable) {
+                        System.out.println("onError $error")
+                    }
+                })
+```
+**Output**
+```
+onSubscribe
+Observable 1
+onNext 1
+onNext 2
+Observable 2
+onNext 3
+onNext 4
+Observable 3
+onNext 5
+onComplete
+```
+
+In the above code example, I have used `window(2)`. As you all know `Observable.just()` 
+will emit items one by one. This `window` operator will wait until the mentioned **size** of items
+to emit and will collectively emit those items as `Observable<Observable<T>>`. In our case
+it is `Observable<Observable<String>>`. So in the output, you can notice the division of observables and their
+respective emission. Just to make you understand the split of observables I have added a print statement inside the
+`flatMap`. 
+
+**Time:**
+
+```
+var count = 1
+Observable.just("1", "2", "3", "4", "5", "6", "7", "8")
+                .window(2, TimeUnit.MILLISECONDS)
+                .flatMap {
+                    System.out.println("WindowObservable $count")
+                    count++
+                    it
+                }
+                .subscribe(object : Observer<String> {
+                    override fun onComplete() {
+                        System.out.println("Window onComplete")
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        System.out.println("Window onSubscribe")
+                    }
+
+                    override fun onNext(result: String) {
+                        System.out.println("Window onNext $result")
+                    }
+
+                    override fun onError(error: Throwable) {
+                        System.out.println("Window onError $error")
+                    }
+                })
+```
+**Output**
+```
+onSubscribe
+Observable 1
+onNext 1
+onNext 2
+onNext 3
+onNext 4
+onNext 5
+onNext 6
+onNext 7
+Observable 2
+onNext 8
+onComplete
+```
+
+In this example, `window` operator is used with specific time.`window` will wait until the mentioned **time** 
+and will collectively emit those items as `Observable<Observable<T>>`. In our case, only two observables are 
+created with their respective emission.
+
+**windowWithSkip**
+
+```
+var count = 1
+Observable.just("1", "2", "3", "4", "5", "6", "7", "8")
+                .window(2, 3)
+                .flatMap {
+                    System.out.println("WindowObservable $count")
+                    count++
+                    it
+                }
+                .subscribe(object : Observer<String> {
+                    override fun onComplete() {
+                        System.out.println("Window onComplete")
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        System.out.println("Window onSubscribe")
+                    }
+
+                    override fun onNext(result: String) {
+                        System.out.println("Window onNext $result")
+                    }
+
+                    override fun onError(error: Throwable) {
+                        System.out.println("Window onError $error")
+                    }
+                })
+```
+**Ouput**
+```
+onSubscribe
+Observable 1
+onNext 1
+onNext 2
+Observable 2
+onNext 4
+onNext 5
+Observable 3
+onNext 7
+onNext 8
+onComplete
+```
+This type of `window` operator will work same as `widow(size)` but that one extra parameter `window(size, skip)` will skip
+that count item on each divided observable. In the output you can see that in every observable the 3rd item is getting skipped (i.e)
+In our case 3 and 6 are skipped.
+
+**Note:** Both `window` and `buffer` will do the same operation but the return type is different. 
+`window` will return stream of stream (i.e) `Observable<Observable<T>>` where `buffer` will return stream of
+list (i.e) `Observable<List<T>>`. Actual statement official document - `window` operator is similar to `buffer` but collects 
+items into separate **Observables** rather than into **Data Structures(List)** before reemitting them.
+
+### cast
+
+Everyone knows what is casting?. Casting is nothing but changing one type to another type.
+For example String to Integer and vice versa. So in rxJava casting is done on the flow of data using
+`cast` operator. Let see an example.
+
+```
+Observable.fromIterable(getManufacturedVehicles())
+                .filter {
+                    it is Car
+                }.cast(Car::class.java)
+                .subscribe(object : Observer<Car> {
+                    override fun onComplete() {
+                        System.out.println("onComplete")
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        System.out.println("onSubscribe")
+                    }
+
+                    override fun onNext(result: Car) {
+                        System.out.println("onNext ${result.name}")
+                    }
+
+                    override fun onError(error: Throwable) {
+                        System.out.println("onError $error")
+                    }
+                })
+```
+
+**Output**
+```
+onSubscribe
+onNext Ferrari
+onNext Lamborghini
+onNext Rolls Royce
+onNext Porsche
+onComplete
+```
+
+**Code Analysis**
+1. I have inherited two data class `Bike` and `Car` from class `Vehicle`. 
+2. Data classes are below.
+
+```
+    open class Vehicle (var type: String, var vehicleName: String? = null)
+
+    data class Bike(val isFootPathAvailable: Boolean, val name: String): Vehicle("Bike", name)
+
+    data class Car (var isFourSeated: Boolean, val name: String): Vehicle("Car", name)
+```
+3. Assume that you want to retrieve vehicle list from remote server or DB and to filter only 
+`Car` type. You can do like below
+
+```
+Observable.fromIterable(getManufacturedVehicles())
+                .filter {
+                    it is Car
+                }
+                .subscribe(object : Observer<Vehicle> {
+                    override fun onComplete() {
+                        System.out.println("  onComplete")
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        System.out.println("cast onSubscribe")
+                    }
+
+                    override fun onNext(result: Vehicle) {
+                        result as Car
+                        System.out.println("cast onNext ${result.name}")
+                    }
+
+                    override fun onError(error: Throwable) {
+                        System.out.println("cast onError $error")
+                    }
+                })
+``` 
+4. But using the above code snippet, you can cast only after you get the response in the `onNext()`. 
+5. If you want `cast` on the flow of data then you can make use of the `cast()` operator.

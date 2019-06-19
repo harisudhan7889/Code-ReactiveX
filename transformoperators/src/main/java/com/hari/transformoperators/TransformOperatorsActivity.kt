@@ -39,6 +39,10 @@ class TransformOperatorsActivity : AppCompatActivity(),
         scan2.setOnClickListener(this)
         reduce.setOnClickListener(this)
         flatMapMaybe.setOnClickListener(this)
+        windowOS.setOnClickListener(this)
+        windowOT.setOnClickListener(this)
+        windowSkip.setOnClickListener(this)
+        cast.setOnClickListener(this)
     }
 
     private fun getGeoLocations() {
@@ -91,6 +95,18 @@ class TransformOperatorsActivity : AppCompatActivity(),
             }
             reduce -> {
                 presenter.reduce()
+            }
+            windowOS -> {
+                presenter.windowBasedOnSize()
+            }
+            windowOT -> {
+                presenter.windowBasedOnTime()
+            }
+            windowSkip -> {
+                presenter.windowSkip()
+            }
+            cast -> {
+                presenter.cast()
             }
         }
     }

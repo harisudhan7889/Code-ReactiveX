@@ -8,10 +8,12 @@ import com.hari.api.model.UserReviewsObject
 import com.hari.api.model.WinningCount
 import com.hari.api.network.Api
 import com.hari.api.network.ApiEndPoint
+import com.hari.transformoperators.model.Bike
+import com.hari.transformoperators.model.Car
+import com.hari.transformoperators.model.Vehicle
 import io.reactivex.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.functions.Action
 import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function
 import io.reactivex.schedulers.Schedulers
@@ -327,6 +329,138 @@ class TransformOperatorsPresenter(private val context: Context) {
                 }
 
             })
+    }
+
+    fun windowBasedOnSize() {
+        var count = 1
+        Observable.just("1", "2", "3", "4", "5")
+                .window(2)
+                .flatMap {
+                    System.out.println("WindowObservable $count")
+                    count++
+                    it
+                }
+                .subscribe(object : Observer<String> {
+                    override fun onComplete() {
+                        System.out.println("Window onComplete")
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        System.out.println("Window onSubscribe")
+                    }
+
+                    override fun onNext(result: String) {
+                        System.out.println("Window onNext $result")
+                    }
+
+                    override fun onError(error: Throwable) {
+                        System.out.println("Window onError $error")
+                    }
+                })
+    }
+
+    fun windowBasedOnTime() {
+        var count = 1
+        Observable.just("1", "2", "3", "4", "5", "6", "7", "8")
+                .window(2, TimeUnit.MILLISECONDS)
+                .flatMap {
+                    System.out.println("WindowObservable $count")
+                    count++
+                    it
+                }
+                .subscribe(object : Observer<String> {
+                    override fun onComplete() {
+                        System.out.println("Window onComplete")
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        System.out.println("Window onSubscribe")
+                    }
+
+                    override fun onNext(result: String) {
+                        System.out.println("Window onNext $result")
+                    }
+
+                    override fun onError(error: Throwable) {
+                        System.out.println("Window onError $error")
+                    }
+                })
+    }
+
+    fun windowSkip() {
+        var count = 1
+        Observable.just("1", "2", "3", "4", "5", "6", "7", "8")
+                .window(2, 3)
+                .flatMap {
+                    System.out.println("WindowObservable $count")
+                    count++
+                    it
+                }
+                .subscribe(object : Observer<String> {
+                    override fun onComplete() {
+                        System.out.println("Window onComplete")
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        System.out.println("Window onSubscribe")
+                    }
+
+                    override fun onNext(result: String) {
+                        System.out.println("Window onNext $result")
+                    }
+
+                    override fun onError(error: Throwable) {
+                        System.out.println("Window onError $error")
+                    }
+                })
+    }
+
+    fun cast() {
+        Observable.fromIterable(getManufacturedVehicles())
+                .filter {
+                    it is Car
+                }
+                .subscribe(object : Observer<Vehicle> {
+                    override fun onComplete() {
+                        System.out.println("  onComplete")
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        System.out.println("cast onSubscribe")
+                    }
+
+                    override fun onNext(result: Vehicle) {
+                        result as Car
+                        System.out.println("cast onNext ${result.name}")
+                    }
+
+                    override fun onError(error: Throwable) {
+                        System.out.println("cast onError $error")
+                    }
+                })
+    }
+
+    private fun getManufacturedVehicles(): List<Vehicle> {
+        val vehicles = ArrayList<Vehicle>()
+
+        val bike1 = Bike(true, "Yamaha FZ")
+        val bike2 = Bike(false, "MV Agusta F4")
+        val bike3 = Bike(false, "Harley-Davidson")
+        val bike4 = Bike(true, "Ducati Diavel")
+        vehicles.add(bike1)
+        vehicles.add(bike2)
+        vehicles.add(bike3)
+        vehicles.add(bike4)
+
+        val car1 = Car(true, "Ferrari")
+        val car2 = Car(false, "Lamborghini")
+        val car3 = Car(true, "Rolls Royce")
+        val car4 = Car(false, "Porsche")
+        vehicles.add(car1)
+        vehicles.add(car2)
+        vehicles.add(car3)
+        vehicles.add(car4)
+        return vehicles
     }
 
     private fun getWorldCupWinners(): MutableList<WinningCount> {
