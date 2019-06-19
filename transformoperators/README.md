@@ -18,6 +18,7 @@
 * [flatMapIterable](#flatmapiterable) 
 * [concatMapIterable](#concatmapiterable)
 * [window](#window)
+* [cast](#cast)
 
 ### buffer Operator
 
