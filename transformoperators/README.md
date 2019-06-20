@@ -19,6 +19,8 @@
 * [concatMapIterable](#concatmapiterable)
 * [window](#window)
 * [cast](#cast)
+* [flatMapSingle](#flatmapsingle)
+* [concatMapSingle](#concatmapsingle)
 
 ### buffer Operator
 
@@ -1263,3 +1265,109 @@ Observable.fromIterable(getManufacturedVehicles())
 ``` 
 4. But using the above code snippet, you can cast only after you get the response in the `onNext()`. 
 5. If you want `cast` on the flow of data then you can make use of the `cast()` operator.
+
+### flatMapSingle
+
+`FlatMap` that returns a `SingleSource` type is `flatMapSingle`. 
+
+**When to use?**
+
+Assume we already have a endpoint that returns 
+`Single<Restaurants>` (i.e) `getRestaurantsAtLocationSingle(lat, long): Single<Restaurants>`. 
+Suppose if we have multiple location coordinates and need to find the restaurant details nearby
+those location then we have to use `flatMap` to retrieve the restaurant details. Before `flatMapSingle`
+was introduced we can achieve this like below example.
+
+```
+val location = ArrayList<String>()
+        location.add("9.925201,78.119774")
+        location.add("13.082680,80.270721")
+        location.add("10.073132,78.780151")
+        val progressBar = ProgressDialog(context)
+        val endPoint = Api.getClient().create(ApiEndPoint::class.java)
+        Observable.fromIterable(location)
+                .flatMap(object : Function<String, Observable<Restaurants>> {
+                    override fun apply(locCoordinates: String): Observable<Restaurants> {
+                        val locCoordArray = TextUtils.split(locCoordinates, ",")
+                        val single = endPoint.getRestaurantsAtLocationSingle(locCoordArray[0].toDouble(), locCoordArray[1].toDouble(), 0, 3)
+                        return single.toObservable()
+                    }
+                }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : Observer<Restaurants> {
+                    override fun onComplete() {
+                        progressBar.dismiss()
+                        System.out.println("onComplete")
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        progressBar.show()
+                        System.out.println("onSubscribe")
+                    }
+
+                    override fun onNext(t: Restaurants) {
+                        System.out.println("onNext ${t.restaurants}")
+                    }
+
+                    override fun onError(e: Throwable) {
+                        progressBar.dismiss()
+                        System.out.println("onError $e")
+                    }
+
+                })
+```
+
+It does the job however the Single always needs to be converted to an Observable if we are using the `flatMap`. To avoid
+this `flatMapSingle` was introduced. See the below example to understand it more clear.
+
+```
+val location = ArrayList<String>()
+        location.add("9.925201,78.119774")
+        location.add("13.082680,80.270721")
+        location.add("10.073132,78.780151")
+        val progressBar = ProgressDialog(context)
+        val endPoint = Api.getClient().create(ApiEndPoint::class.java)
+        Observable.fromIterable(location)
+                .flatMapSingle(object : Function<String, Single<Restaurants>> {
+                    override fun apply(locCoordinates: String): Single<Restaurants> {
+                        val locCoordArray = TextUtils.split(locCoordinates, ",")
+                        return endPoint.getRestaurantsAtLocationSingle(locCoordArray[0].toDouble(), locCoordArray[1].toDouble(), 0, 3)
+                    }
+                }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : Observer<Restaurants> {
+                    override fun onComplete() {
+                        progressBar.dismiss()
+                        System.out.println("flatMapSingle  onComplete")
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        progressBar.show()
+                        System.out.println("flatMapSingle  onSubscribe")
+                    }
+
+                    override fun onNext(t: Restaurants) {
+                        System.out.println("flatMapSingle  onNext ${t.restaurants}")
+                    }
+
+                    override fun onError(e: Throwable) {
+                        progressBar.dismiss()
+                        System.out.println("flatMapSingle  onNext $e")
+                    }
+
+                })
+```
+
+**Output**
+```
+onSubscribe
+onNext [RestaurantObject(restaurant=Restaurant(id=18693573, name=Bismi Hotel))]
+onNext [RestaurantObject(restaurant=Restaurant(id=18800810, name=The Black Pearl))]
+onNext [RestaurantObject(restaurant=Restaurant(id=18800811, name=Barbeque)]
+onComplete
+```
+
+### concatMapSingle 
+
+`concatMapSingle` produces the same output as `flatMapSingle` but the sequence the data emitted changes. 
+`concatMapSingle()` maintains the order of items and waits for the current Observable to complete its job before emitting the next one.

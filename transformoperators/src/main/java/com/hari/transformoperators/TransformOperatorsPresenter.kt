@@ -2,10 +2,8 @@ package com.hari.transformoperators
 
 import android.app.ProgressDialog
 import android.content.Context
-import com.hari.api.model.RestaurantObject
-import com.hari.api.model.UserReviews
-import com.hari.api.model.UserReviewsObject
-import com.hari.api.model.WinningCount
+import android.text.TextUtils
+import com.hari.api.model.*
 import com.hari.api.network.Api
 import com.hari.api.network.ApiEndPoint
 import com.hari.transformoperators.model.Bike
@@ -422,7 +420,7 @@ class TransformOperatorsPresenter(private val context: Context) {
                 }
                 .subscribe(object : Observer<Vehicle> {
                     override fun onComplete() {
-                        System.out.println("  onComplete")
+                        System.out.println("cast onComplete")
                     }
 
                     override fun onSubscribe(d: Disposable) {
@@ -437,6 +435,44 @@ class TransformOperatorsPresenter(private val context: Context) {
                     override fun onError(error: Throwable) {
                         System.out.println("cast onError $error")
                     }
+                })
+    }
+
+    fun flatMapSingleWithObservable() {
+        val location = ArrayList<String>()
+        location.add("9.925201,78.119774")
+        location.add("13.082680,80.270721")
+        location.add("10.073132,78.780151")
+        val progressBar = ProgressDialog(context)
+        val endPoint = Api.getClient().create(ApiEndPoint::class.java)
+        Observable.fromIterable(location)
+                .flatMapSingle(object : Function<String, Single<Restaurants>> {
+                    override fun apply(locCoordinates: String): Single<Restaurants> {
+                        val locCoordArray = TextUtils.split(locCoordinates, ",")
+                        return endPoint.getRestaurantsAtLocationSingle(locCoordArray[0].toDouble(), locCoordArray[1].toDouble(), 0, 3)
+                    }
+                }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : Observer<Restaurants> {
+                    override fun onComplete() {
+                        progressBar.dismiss()
+                        System.out.println("flatMapSingle  onComplete")
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        progressBar.show()
+                        System.out.println("flatMapSingle  onSubscribe")
+                    }
+
+                    override fun onNext(t: Restaurants) {
+                        System.out.println("flatMapSingle  onNext ${t.restaurants}")
+                    }
+
+                    override fun onError(e: Throwable) {
+                        progressBar.dismiss()
+                        System.out.println("flatMapSingle  onNext $e")
+                    }
+
                 })
     }
 

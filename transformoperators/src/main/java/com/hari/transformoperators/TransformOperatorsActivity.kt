@@ -43,6 +43,7 @@ class TransformOperatorsActivity : AppCompatActivity(),
         windowOT.setOnClickListener(this)
         windowSkip.setOnClickListener(this)
         cast.setOnClickListener(this)
+        flatMapSingle.setOnClickListener(this)
     }
 
     private fun getGeoLocations() {
@@ -108,6 +109,10 @@ class TransformOperatorsActivity : AppCompatActivity(),
             cast -> {
                 presenter.cast()
             }
+            flatMapSingle -> {
+                presenter.flatMapSingleWithObservable()
+            }
+
         }
     }
 }

@@ -154,4 +154,33 @@
         app:layout_constraintStart_toEndOf="@+id/windowSkip"
         app:layout_constraintTop_toBottomOf="@+id/windowOS"
         app:layout_constraintVertical_bias="0.028" />
+
+    <Button
+        android:id="@+id/flatMapSingle"
+        android:layout_width="149dp"
+        android:layout_height="109dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="flat map single"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/windowOT"
+        app:layout_constraintVertical_bias="0.028" />
+
+    <Button
+        android:id="@+id/flatMapSingleElement"
+        android:layout_width="152dp"
+        android:layout_height="119dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:text=" flat Map Single Element"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.18"
+        app:layout_constraintStart_toEndOf="@+id/flatMapSingle"
+        app:layout_constraintTop_toBottomOf="@+id/windowSkip"
+        app:layout_constraintVertical_bias="0.05" />
 </android.support.constraint.ConstraintLayout>
