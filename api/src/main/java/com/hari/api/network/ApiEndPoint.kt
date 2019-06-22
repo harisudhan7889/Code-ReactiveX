@@ -18,6 +18,10 @@ interface ApiEndPoint {
     fun getRestaurantsAtLocation(@Query("lat") lat: Double, @Query("lon") lon: Double,
                                  @Query("start") start: Int, @Query("count") count: Int): Observable<Restaurants>
 
+    @GET("api/v2.1/search1")
+    fun getRestaurantsAtLocationWithError(@Query("lat") lat: Double, @Query("lon") lon: Double,
+                                 @Query("start") start: Int, @Query("count") count: Int): Observable<Restaurants>
+
     @GET("api/v2.1/reviews")
     fun getRestaurantReview(@Query("res_id") restaurantId: String,
                             @Query("start") start: Int, @Query("count") count: Int): Observable<UserReviewsObject>
@@ -25,6 +29,7 @@ interface ApiEndPoint {
     @GET("api/v2.1/search")
     fun getRestaurantsAtLocationSingle(@Query("lat") lat: Double, @Query("lon") lon: Double,
                                  @Query("start") start: Int, @Query("count") count: Int): Single<Restaurants>
+
 
     @GET("api/v2.1/search")
     fun getRestaurantsAtLocationMaybe(@Query("lat") lat: Double, @Query("lon") lon: Double,

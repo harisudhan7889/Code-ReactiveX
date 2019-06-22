@@ -44,6 +44,8 @@ class TransformOperatorsActivity : AppCompatActivity(),
         windowSkip.setOnClickListener(this)
         cast.setOnClickListener(this)
         flatMapSingle.setOnClickListener(this)
+        concatMapEager.setOnClickListener(this)
+        concatMapEagerWithError.setOnClickListener(this)
     }
 
     private fun getGeoLocations() {
@@ -112,7 +114,12 @@ class TransformOperatorsActivity : AppCompatActivity(),
             flatMapSingle -> {
                 presenter.flatMapSingleWithObservable()
             }
-
+            concatMapEager -> {
+                presenter.concatMapEager()
+            }
+            concatMapEagerWithError -> {
+                presenter.concatMapEagerDelayError()
+            }
         }
     }
 }

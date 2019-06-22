@@ -476,6 +476,87 @@ class TransformOperatorsPresenter(private val context: Context) {
                 })
     }
 
+    fun concatMapEager() {
+        val location = ArrayList<String>()
+        location.add("9.925201,78.119774")
+        location.add("13.082680,80.270721")
+        location.add("10.800820,78.689919")
+        val progressBar = ProgressDialog(context)
+        val endPoint = Api.getClient().create(ApiEndPoint::class.java)
+        Observable.fromIterable(location)
+                .concatMapEager(object : Function<String, Observable<Restaurants>> {
+                    override fun apply(locCoordinates: String): Observable<Restaurants> {
+                        val locCoordArray = TextUtils.split(locCoordinates, ",")
+                        return endPoint.getRestaurantsAtLocation(locCoordArray[0].toDouble(), locCoordArray[1].toDouble(), 0, 3)
+                    }
+                }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : Observer<Restaurants> {
+                    override fun onComplete() {
+                        progressBar.dismiss()
+                        System.out.println("concatMapEager onComplete")
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        progressBar.show()
+                        System.out.println("concatMapEager onSubscribe")
+                    }
+
+                    override fun onNext(restaurants: Restaurants) {
+                        val locationDetails = restaurants.restaurants[0].restaurant.location
+                        System.out.println("concatMapEager onNext $locationDetails")
+                    }
+
+                    override fun onError(e: Throwable) {
+                        progressBar.dismiss()
+                        System.out.println("concatMapEager onError $e")
+                    }
+                })
+    }
+
+    fun concatMapEagerDelayError() {
+        val location = ArrayList<String>()
+        location.add("9.925201,78.119774")
+        location.add("13.082680,80.270721")
+        location.add("10.800820,78.689919")
+        val progressBar = ProgressDialog(context)
+        val endPoint = Api.getClient().create(ApiEndPoint::class.java)
+        Observable.fromIterable(location)
+                .concatMapEagerDelayError(object : Function<String, Observable<Restaurants>> {
+                    override fun apply(locCoordinates: String): Observable<Restaurants> {
+                        val locCoordArray = TextUtils.split(locCoordinates, ",")
+                        return if (locCoordArray[0] == "13.082680" || locCoordArray[0] == "9.925201") {
+                            endPoint.getRestaurantsAtLocationWithError(locCoordArray[0].toDouble(), locCoordArray[1].toDouble(), 0, 3)
+                        } else {
+                            endPoint.getRestaurantsAtLocation(locCoordArray[0].toDouble(), locCoordArray[1].toDouble(), 0, 3)
+                        }
+                    }
+                }, false)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread(), true)
+                .subscribe(object : Observer<Restaurants> {
+                    override fun onComplete() {
+                        progressBar.dismiss()
+                        System.out.println("concatMapEagerDelayError onComplete")
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        progressBar.show()
+                        System.out.println("concatMapEagerDelayError onSubscribe")
+                    }
+
+                    override fun onNext(restaurants: Restaurants) {
+                        val locationDetails = restaurants.restaurants[0].restaurant.location
+                        System.out.println("concatMapEagerDelayError onNext $locationDetails")
+                    }
+
+                    override fun onError(e: Throwable) {
+                        progressBar.dismiss()
+                        System.out.println("concatMapEagerDelayError onError $e")
+                    }
+                })
+    }
+
     private fun getManufacturedVehicles(): List<Vehicle> {
         val vehicles = ArrayList<Vehicle>()
 

@@ -1,10 +1,10 @@
 ## Transform Operators:
 
-
 * [buffer](#buffer-operator)
 * [map](#map-operator)
 * [flatMap](#flatmap-operator)
 * [concatMap](#concatmap-operator)
+* [concatMapDelayError](#concatmapdelayerror)
 * [switchMap](#switchmap-operator)
 * [Difference between all map operators](#difference-between-all-map-operators)
 * [groupBy](#groupby-operator)
@@ -21,6 +21,9 @@
 * [cast](#cast)
 * [flatMapSingle](#flatmapsingle)
 * [concatMapSingle](#concatmapsingle)
+* [concatMapSingleDelayError](#concatmapsingledelayerror)
+* [concatMapEager](#concatmapeager)
+* [concatMapEagerDelayError](#concatmapeagerdelayerror)
 
 ### buffer Operator
 
@@ -270,6 +273,10 @@ execution, network call to fetch reviews for Restaurant 2 will be started.
 **In realtime when to use this operator?**
 
   It can be used when you want to maintain the order of execution.
+  
+### concatMapDelayError
+This is same as `concatMap` but the one extra adds-on is 
+any errors from the sources will be delayed until all of the results terminate.     
   
 ### switchMap Operator  
 
@@ -1371,3 +1378,181 @@ onComplete
 
 `concatMapSingle` produces the same output as `flatMapSingle` but the sequence the data emitted changes. 
 `concatMapSingle()` maintains the order of items and waits for the current Observable to complete its job before emitting the next one.
+
+### concatMapSingleDelayError
+This is same as `concatMapSingle` but the one extra adds-on is 
+any errors from the sources will be delayed until all of them terminate.
+
+### concatMapEager
+This operator is different from `concatMap`. As you all know `concatMap` will make the calls sequentially.
+`concatMap` will waits for a call to complete to start the next call. But `concatMapEager` is direct opposite to 
+`concatMap`.`concatMapEager` will subscribes to all substreams at the same time, concurrently. Eventhough it makes
+the concurrent calls, it maintains the order of items. See the below example and its output to get clear picture.
+
+```
+        val location = ArrayList<String>()
+        location.add("9.925201,78.119774")
+        location.add("13.082680,80.270721")
+        location.add("10.800820,78.689919")
+        val progressBar = ProgressDialog(context)
+        val endPoint = Api.getClient().create(ApiEndPoint::class.java)
+        Observable.fromIterable(location)
+                .concatMapEager(object : Function<String, Observable<Restaurants>> {
+                    override fun apply(locCoordinates: String): Observable<Restaurants> {
+                        val locCoordArray = TextUtils.split(locCoordinates, ",")
+                        return endPoint.getRestaurantsAtLocation(locCoordArray[0].toDouble(), locCoordArray[1].toDouble(), 0, 3)
+                    }
+                }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : Observer<Restaurants> {
+                    override fun onComplete() {
+                        progressBar.dismiss()
+                        System.out.println("onComplete")
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        progressBar.show()
+                        System.out.println("onSubscribe")
+                    }
+
+                    override fun onNext(restaurants: Restaurants) {
+                        val locationDetails = restaurants.restaurants[0].restaurant.location
+                        System.out.println("onNext $locationDetails")
+                    }
+
+                    override fun onError(e: Throwable) {
+                        progressBar.dismiss()
+                        System.out.println("onError $e")
+                    }
+                })
+```
+
+**Output**
+```
+GET https://developers.zomato.com/api/v2.1/search?lat=9.925201&lon=78.119774&start=0&count=3
+GET https://developers.zomato.com/api/v2.1/search?lat=13.08268&lon=80.270721&start=0&count=3
+GET https://developers.zomato.com/api/v2.1/search?lat=10.80082&lon=78.689919&start=0&count=3
+
+200 https://developers.zomato.com/api/v2.1/search?lat=9.925201&lon=78.119774&start=0&count=3
+200 https://developers.zomato.com/api/v2.1/search?lat=10.80082&lon=78.689919&start=0&count=3
+200 https://developers.zomato.com/api/v2.1/search?lat=13.08268&lon=80.270721&start=0&count=3
+
+onSubscribe
+onNext Location(latitude=9.925201, longitude=78.119774)
+onNext Location(latitude=13.08268, longitude=78.689919)
+onNext Location(latitude=10.80082, longitude=80.270721)
+onComplete
+```
+
+In the above code example, I initialized a array of location coordinates. 
+Using `concatMapEager`, I initiate HTTP requests instantly to get the restaurant details
+in that location. In the output I have mentioned Http logs too to understand how `concatMapEager`
+maintains the order. So three calls are made concurrently. We get the first call's reponse and it is 
+passed downstream, but before the second network call's response arrives, the third call's response arrived. 
+Unfortunately the third call's response must wait even more because we need a second call's response.
+Once second call's response completes, the third call's result is passed downstream.
+  
+### concatMapEagerDelayError
+
+This operator works same as `concatMapEager` but the one extra adds-on is 
+it provide a way to specify when to throw the errors. It can be specified using the boolean.
+See the below example for more clarity.
+
+```
+        val location = ArrayList<String>()
+        location.add("9.925201,78.119774")
+        location.add("13.082680,80.270721")
+        location.add("10.800820,78.689919")
+        val progressBar = ProgressDialog(context)
+        val endPoint = Api.getClient().create(ApiEndPoint::class.java)
+        Observable.fromIterable(location)
+                .concatMapEagerDelayError(object : Function<String, Observable<Restaurants>> {
+                    override fun apply(locCoordinates: String): Observable<Restaurants> {
+                        val locCoordArray = TextUtils.split(locCoordinates, ",")
+                        return if (locCoordArray[0] == "13.082680") {
+                            endPoint.getRestaurantsAtLocationWithError(locCoordArray[0].toDouble(), locCoordArray[1].toDouble(), 0, 3)
+                        } else {
+                            endPoint.getRestaurantsAtLocation(locCoordArray[0].toDouble(), locCoordArray[1].toDouble(), 0, 3)
+                        }
+                    }
+                }, true)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread(), true)
+                .subscribe(object : Observer<Restaurants> {
+                    override fun onComplete() {
+                        progressBar.dismiss()
+                        System.out.println("onComplete")
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        progressBar.show()
+                        System.out.println("onSubscribe")
+                    }
+
+                    override fun onNext(restaurants: Restaurants) {
+                        val locationDetails = restaurants.restaurants[0].restaurant.location
+                        System.out.println("onNext $locationDetails")
+                    }
+
+                    override fun onError(e: Throwable) {
+                        progressBar.dismiss()
+                        System.out.println("onError $e")
+                    }
+                })
+```
+
+In the above example, I have used a network service with error (**getRestaurantsAtLocationWithError**) for
+one location coordinate to check how `concatMapEagerDelayError` actually works. You have to pass
+a boolean value as one of the argument to `concatMapEagerDelayError(mapper: Function, tillTheEnd: Boolean)`. 
+
+If you pass `true` all errors are delayed until the end. So from the below output you can understand this more 
+clear. As per the logic of the above sample, when the second location is processed, it should throw a error but 
+it throws the error at the end.    
+
+**Output when true is passed** 
+```
+onSubscribe
+onNext Location(latitude=9.9322565385, longitude=78.1437617540)
+onNext Location(latitude=10.8262220000, longitude=78.6847500000)
+onError retrofit2.adapter.rxjava2.HttpException: HTTP 404
+```  
+
+If you pass `false`, an error from the main source is signalled when the current ObservableSource source terminates.
+Which means it waits for all the calls to get complete and finally 
+emits the **Exception(If one error occurred) or CompositeException(Collection of multiple errors)**.
+Suppose there are no errors then finally the results are emitted one by one. 
+
+**Output when false is passed** 
+```
+onSubscribe
+onError retrofit2.adapter.rxjava2.HttpException: HTTP 404
+```
+**Output while multiple errors occurred when false is passed** 
+```
+onSubscribe
+onError io.reactivex.exceptions.CompositeException: 2 exceptions occurred.
+```
+
+**Note:** 
+
+When you are using these kind of operators with `delayError` your main thread
+handling should also be different. Main thread should be capable of handling these
+delay errors. So you should specify this while observer getting subscribed.
+
+```
+.subscribeOn(Schedulers.io())
+.observeOn(AndroidSchedulers.mainThread(), true)
+```
+
+```
+observeOn(AndroidSchedulers.mainThread(), delayError)
+```
+
+`delayError` – Indicates if the onError notification may not cut ahead of onNext notification on the other side of the scheduling boundary. 
+
+This note suits for the below operators 
+
+1. `concatMapDelayError`
+2. `concatMapSingleDelayError` 
+3. `concatMapCompletableDelayError`
+4. `concatMapEagerDelayError`
