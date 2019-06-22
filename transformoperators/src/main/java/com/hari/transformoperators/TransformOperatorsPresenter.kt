@@ -525,13 +525,13 @@ class TransformOperatorsPresenter(private val context: Context) {
                 .concatMapEagerDelayError(object : Function<String, Observable<Restaurants>> {
                     override fun apply(locCoordinates: String): Observable<Restaurants> {
                         val locCoordArray = TextUtils.split(locCoordinates, ",")
-                        return if (locCoordArray[0] == "13.082680" || locCoordArray[0] == "9.925201") {
+                        return if (locCoordArray[0] == "13.082680") {
                             endPoint.getRestaurantsAtLocationWithError(locCoordArray[0].toDouble(), locCoordArray[1].toDouble(), 0, 3)
                         } else {
                             endPoint.getRestaurantsAtLocation(locCoordArray[0].toDouble(), locCoordArray[1].toDouble(), 0, 3)
                         }
                     }
-                }, false)
+                }, true)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread(), true)
                 .subscribe(object : Observer<Restaurants> {

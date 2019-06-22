@@ -276,7 +276,9 @@ execution, network call to fetch reviews for Restaurant 2 will be started.
   
 ### concatMapDelayError
 This is same as `concatMap` but the one extra adds-on is 
-any errors from the sources will be delayed until all of the results terminate.     
+any errors from the sources will be delayed until all of the results terminate.  
+
+**Note:** [Click here to see the impotant note](#important-note)   
   
 ### switchMap Operator  
 
@@ -839,6 +841,8 @@ From the above example, let us assume one of the updates got failed and you want
 at the last after all other updates gets completed then you can use `concatMapCompletableDelayError`. 
 Errors will be thrown at the last after all other sources completes its process.
 
+**Note:** [Click here to see the impotant note](#important-note) 
+
 ### flatMapMaybe
 `FlatMap + Maybe = FlatMapMaybe`. FlatMap which has capability to emit **result, no result 
 or error result** for each item emitted by a reactive source is called `FlatMapMaybe`. 
@@ -1383,6 +1387,8 @@ onComplete
 This is same as `concatMapSingle` but the one extra adds-on is 
 any errors from the sources will be delayed until all of them terminate.
 
+**Note:** [Click here to see the impotant note](#important-note) 
+
 ### concatMapEager
 This operator is different from `concatMap`. As you all know `concatMap` will make the calls sequentially.
 `concatMap` will waits for a call to complete to start the next call. But `concatMapEager` is direct opposite to 
@@ -1533,7 +1539,7 @@ onSubscribe
 onError io.reactivex.exceptions.CompositeException: 2 exceptions occurred.
 ```
 
-**Note:** 
+#### Important Note 
 
 When you are using these kind of operators with `delayError` your main thread
 handling should also be different. Main thread should be capable of handling these
