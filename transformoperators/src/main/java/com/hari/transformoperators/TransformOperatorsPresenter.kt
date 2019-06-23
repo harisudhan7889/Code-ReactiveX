@@ -15,6 +15,9 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subscribers.DisposableSubscriber
+import org.reactivestreams.Subscriber
+import org.reactivestreams.Subscription
 import java.util.concurrent.TimeUnit
 
 /**
@@ -554,6 +557,141 @@ class TransformOperatorsPresenter(private val context: Context) {
                         progressBar.dismiss()
                         System.out.println("concatMapEagerDelayError onError $e")
                     }
+                })
+    }
+
+    fun flattenAsObservable(latitude: Double, longitude: Double) {
+        val progressBar = ProgressDialog(context)
+        val endPoint = Api.getClient().create(ApiEndPoint::class.java)
+        val single = endPoint.getRestaurantsAtLocationSingle(latitude, longitude, 0, 3)
+        single.flattenAsObservable(object : Function<Restaurants, Iterable<RestaurantObject>> {
+            override fun apply(restaurants: Restaurants): Iterable<RestaurantObject> {
+                return restaurants.restaurants
+            }
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : Observer<RestaurantObject> {
+                    override fun onComplete() {
+                        progressBar.dismiss()
+                        System.out.println("flattenAsObservable onComplete")
+                    }
+
+                    override fun onSubscribe(s: Disposable) {
+                        progressBar.show()
+                        System.out.println("flattenAsObservable onSubscribe")
+                    }
+
+                    override fun onNext(restaurantObject: RestaurantObject) {
+                        System.out.println("flattenAsObservable onNext ${restaurantObject.restaurant.name}")
+                    }
+
+                    override fun onError(error: Throwable) {
+                        progressBar.dismiss()
+                        System.out.println("flattenAsObservable onError $error")
+                    }
+                })
+    }
+
+    fun flattenAsFlowable(latitude: Double, longitude: Double) {
+        val progressBar = ProgressDialog(context)
+        val endPoint = Api.getClient().create(ApiEndPoint::class.java)
+        val single = endPoint.getRestaurantsAtLocationSingle(latitude, longitude, 0, 3)
+        single.flattenAsFlowable(object : Function<Restaurants, Iterable<RestaurantObject>> {
+            override fun apply(restaurants: Restaurants): Iterable<RestaurantObject> {
+                return restaurants.restaurants
+            }
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : DisposableSubscriber<RestaurantObject>() {
+                    override fun onComplete() {
+                        progressBar.dismiss()
+                        System.out.println("flattenAsFlowable onComplete")
+                    }
+
+                    override fun onStart() {
+                        progressBar.show()
+                        request(1)
+                        System.out.println("flattenAsFlowable onStart")
+                    }
+
+                    override fun onNext(restaurantObject: RestaurantObject) {
+                        System.out.println("flattenAsFlowable onNext ${restaurantObject.restaurant.name}")
+                        request(1)
+                    }
+
+                    override fun onError(error: Throwable) {
+                        progressBar.dismiss()
+                        System.out.println("flattenAsFlowable onError $error")
+                    }
+                })
+    }
+
+    fun flatMapObservable(latitude: Double, longitude: Double) {
+        val progressBar = ProgressDialog(context)
+        val endPoint = Api.getClient().create(ApiEndPoint::class.java)
+        val single = endPoint.getRestaurantsAtLocationSingle(latitude, longitude, 0, 3)
+        single.flatMapObservable(object : Function<Restaurants, Observable<List<RestaurantObject>>>{
+            override fun apply(restaurants: Restaurants): Observable<List<RestaurantObject>> {
+                return Observable.just(restaurants.restaurants)
+            }
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : Observer<List<RestaurantObject>>{
+                    override fun onComplete() {
+                        progressBar.dismiss()
+                        System.out.println("flatMapObservable onComplete")
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        progressBar.show()
+                        System.out.println("flatMapObservable onSubscribe")
+                    }
+
+                    override fun onNext(restaurants: List<RestaurantObject>) {
+                        System.out.println("flatMapObservable onNext ${restaurants.size}")
+                    }
+
+                    override fun onError(error: Throwable) {
+                        System.out.println("flatMapObservable onError $error")
+                    }
+                })
+    }
+
+    fun flatMapSingleElement() {
+        val progressBar = ProgressDialog(context)
+        val endPoint = Api.getClient().create(ApiEndPoint::class.java)
+        val maybe = endPoint.getRestaurantsAtLocationMaybe(9.925201,78.119774, 0, 3)
+        maybe.filter { it.restaurants.isNotEmpty() }
+                .flatMapSingleElement(object : Function<Restaurants,Single<List<RestaurantObject>>>{
+                    override fun apply(restaurants: Restaurants): Single<List<RestaurantObject>> {
+                        System.out.println("flatMapSingleElement apply")
+                        return Single.just(restaurants.restaurants)
+                    }
+                }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : MaybeObserver<List<RestaurantObject>>{
+                    override fun onSuccess(restaurants: List<RestaurantObject>) {
+                        progressBar.dismiss()
+                        System.out.println("flatMapSingleElement onSuccess ${restaurants.size}")
+                    }
+
+                    override fun onComplete() {
+                        progressBar.dismiss()
+                        System.out.println("flatMapSingleElement onComplete")
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        progressBar.show()
+                        System.out.println("flatMapSingleElement onSubscribe")
+                    }
+
+                    override fun onError(error: Throwable) {
+                        progressBar.dismiss()
+                        System.out.println("flatMapSingleElement onError $error")
+                    }
+
                 })
     }
 

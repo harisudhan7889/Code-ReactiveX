@@ -24,6 +24,10 @@
 * [concatMapSingleDelayError](#concatmapsingledelayerror)
 * [concatMapEager](#concatmapeager)
 * [concatMapEagerDelayError](#concatmapeagerdelayerror)
+* [flattenAsObservable](#flattenasobservable)
+* [flattenAsFlowable](#flattenasflowable)
+* [flatMapObservable](#flatmapobservable)
+* [flatMapSingleElement](#flatmapsingleelement)
 
 ### buffer Operator
 
@@ -1286,7 +1290,7 @@ Observable.fromIterable(getManufacturedVehicles())
 Assume we already have a endpoint that returns 
 `Single<Restaurants>` (i.e) `getRestaurantsAtLocationSingle(lat, long): Single<Restaurants>`. 
 Suppose if we have multiple location coordinates and need to find the restaurant details nearby
-those location then we have to use `flatMap` to retrieve the restaurant details. Before `flatMapSingle`
+those locations then we have to use `flatMap` to retrieve the restaurant details. Before `flatMapSingle`
 was introduced we can achieve this like below example.
 
 ```
@@ -1555,6 +1559,7 @@ observeOn(AndroidSchedulers.mainThread(), delayError)
 ```
 
 `delayError` – Indicates if the onError notification may not cut ahead of onNext notification on the other side of the scheduling boundary. 
+Which means if this boolean flag is not mentioned then it will not skip the errors.
 
 This note suits for the below operators 
 
@@ -1562,3 +1567,221 @@ This note suits for the below operators
 2. `concatMapSingleDelayError` 
 3. `concatMapCompletableDelayError`
 4. `concatMapEagerDelayError`
+
+### flattenAsObservable
+
+`flattenAsObservable` operator is just like a `flatMapIterable` which converts the list of object to a Iterable of streams so that each item in
+the list will be emitted one by one to its observer. But `flatMapIterable` is available for `Flowable` and `Observable` types and 
+`flattenAsObservable` is available for `Single` and `Maybe` types. For better understand compare `flattenAsObservable` with `flatMapIterable`. 
+
+```
+        val progressBar = ProgressDialog(context)
+        val endPoint = Api.getClient().create(ApiEndPoint::class.java)
+        val single = endPoint.getRestaurantsAtLocationSingle(latitude, longitude, 0, 3)
+        single.flattenAsObservable(object : Function<Restaurants, Iterable<RestaurantObject>> {
+            override fun apply(restaurants: Restaurants): Iterable<RestaurantObject> {
+                return restaurants.restaurants
+            }
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : Observer<RestaurantObject> {
+                    override fun onComplete() {
+                        progressBar.dismiss()
+                        System.out.println("onComplete")
+                    }
+
+                    override fun onSubscribe(s: Disposable) {
+                        progressBar.show()
+                        System.out.println("onSubscribe")
+                    }
+
+                    override fun onNext(restaurantObject: RestaurantObject) {
+                        System.out.println("onNext ${restaurantObject.restaurant.name}")
+                    }
+
+                    override fun onError(error: Throwable) {
+                        progressBar.dismiss()
+                        System.out.println("onError $error")
+                    }
+                })
+```
+
+**Output**
+```
+onSubscribe
+onNext The Black Pearl
+onNext Coal Barbecues
+onNext National Barbecues
+onComplete
+```
+
+### flattenAsFlowable
+
+`flattenAsFlowable` will also works same as `flattenAsObservable` which is available for `Single`
+and `Maybe` types. But there is a difference between these two. `flattenAsFlowable` will
+returns a `Flowable` that emits the elements from the Iterable but `flattenAsObservable` will
+returns an `Observable` that emits the elements from the Iterable. 
+
+As you all know `Flowable` type is used handle the `Backpressure`. 
+You can also make use of this operator if you decide to handle backpressure.
+
+```
+        val progressBar = ProgressDialog(context)
+        val endPoint = Api.getClient().create(ApiEndPoint::class.java)
+        val single = endPoint.getRestaurantsAtLocationSingle(latitude, longitude, 0, 3)
+        single.flattenAsFlowable(object : Function<Restaurants, Iterable<RestaurantObject>> {
+            override fun apply(restaurants: Restaurants): Iterable<RestaurantObject> {
+                return restaurants.restaurants
+            }
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : DisposableSubscriber<RestaurantObject>() {
+                    override fun onComplete() {
+                        progressBar.dismiss()
+                        System.out.println("onComplete")
+                    }
+
+                    override fun onStart() {
+                        progressBar.show()
+                        request(1)
+                        System.out.println("onStart")
+                    }
+
+                    override fun onNext(restaurantObject: RestaurantObject) {
+                        System.out.println("onNext ${restaurantObject.restaurant.name}")
+                        request(1)
+                    }
+
+                    override fun onError(error: Throwable) {
+                        progressBar.dismiss()
+                        System.out.println("onError $error")
+                    }
+                })
+```
+
+**Output**
+```
+onSubscribe
+onNext The Black Pearl
+onNext Coal Barbecues
+onNext National Barbecues
+onComplete
+```
+
+### flatMapObservable
+
+`flatMapObservable` will work same as `flattenAsObservable` 
+but the difference is `flattenAsObservable` will return only Observable<Iterator>
+but `flatMapObservable` will return Observable<Any>. And this 
+operator is available only for `Single` and `Maybe` types.
+
+```
+        val progressBar = ProgressDialog(context)
+        val endPoint = Api.getClient().create(ApiEndPoint::class.java)
+        val single = endPoint.getRestaurantsAtLocationSingle(latitude, longitude, 0, 3)
+        single.flatMapObservable(object : Function<Restaurants, Observable<List<RestaurantObject>>>{
+                           override fun apply(restaurants: Restaurants): Observable<List<RestaurantObject>> {
+                               return Observable.just(restaurants.restaurants)
+                           }
+              }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : Observer<List<RestaurantObject>>{
+                    override fun onComplete() {
+                        progressBar.dismiss()
+                        System.out.println("onComplete")
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        progressBar.show()
+                        System.out.println("onSubscribe")
+                    }
+
+                    override fun onNext(restaurants: List<RestaurantObject>) {
+                        System.out.println("onNext ${restaurants.size}")
+                    }
+
+                    override fun onError(error: Throwable) {
+                        System.out.println("onError $error")
+                    }
+                })
+```
+
+**Output**
+```
+onSubscribe
+onNext 3
+onComplete
+```
+In the above code example I have used `Observable.just()` to return entire Restaurants list.
+You can also return a Iterator using `Observable.fromIterable(list)` instead of `Observable.just()` 
+based on your usecase.
+
+### flatMapSingleElement
+
+This operator is available only in `Maybe` type. You should know how `Maybe` observable type works to understand
+this operator. To know about `Maybe` observable type [Click here](../observables/README.md).  
+
+```
+        val progressBar = ProgressDialog(context)
+        val endPoint = Api.getClient().create(ApiEndPoint::class.java)
+        val maybe = endPoint.getRestaurantsAtLocationMaybe(0.0, 0.0, 0, 3)
+        maybe.filter { it.restaurants.isNotEmpty() }
+                .flatMapSingleElement(object : Function<Restaurants,Single<List<RestaurantObject>>>{
+                    override fun apply(restaurants: Restaurants): Single<List<RestaurantObject>> {
+                        System.out.println("apply function inside flatMapSingleElement")
+                        return Single.just(restaurants.restaurants)
+                    }
+                }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : MaybeObserver<List<RestaurantObject>>{
+                    override fun onSuccess(restaurants: List<RestaurantObject>) {
+                        progressBar.dismiss()
+                        System.out.println("onSuccess ${restaurants.size}")
+                    }
+
+                    override fun onComplete() {
+                        progressBar.dismiss()
+                        System.out.println("onComplete")
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        progressBar.show()
+                        System.out.println("onSubscribe")
+                    }
+
+                    override fun onError(error: Throwable) {
+                        progressBar.dismiss()
+                        System.out.println("onError $error")
+                    }
+                })
+```
+
+**Output**
+```
+onSubscribe
+onComplete
+```
+
+In the above sample, you might noticed that I am passing latitude and longitude as 0.
+This is to show how the code reacts If the result is empty. The Restaurant network api will
+return a empty result if the location coordinates are not valid. If the result is empty then
+`Maybe` will directly call `onComplete` because nothing to do with empty result so `onSuccess(result)` and 
+`flatMapSingleElement{}` will not be called.
+
+Lets take a valid scenario where I am passing the valid location coordinates **(9.925201,78.119774)**.
+In this case I will get the result and if I want to transform this result to another then I can make
+use of `flatMapSingleElement` operator which in turns return `SingleSource<Object>`. 
+In this example I have just taken the inner `restaurants` list object from the root object and returned
+it as `SingleSource<List<RestaurantObject>>` by using `Single.just(restaurants.restaurants)`. 
+
+
+Below output is when I pass the valid location coordinates **(9.925201,78.119774)**
+
+**Output**
+```
+onSubscribe
+apply function inside flatMapSingleElement
+onSuccess 3
+```
