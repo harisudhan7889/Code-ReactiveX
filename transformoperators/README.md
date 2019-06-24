@@ -28,6 +28,7 @@
 * [flattenAsFlowable](#flattenasflowable)
 * [flatMapObservable](#flatmapobservable)
 * [flatMapSingleElement](#flatmapsingleelement)
+* [Availability Table](#availability-table)
 
 ### buffer Operator
 
@@ -1785,3 +1786,40 @@ onSubscribe
 apply function inside flatMapSingleElement
 onSuccess 3
 ```
+
+
+### Availability Table
+
+A - Available, NA - Not Available
+
+| Operators                         |Observable|Flowable|Single|Maybe|Completable|
+|-----------------------------------|----------|--------|------|-----|-----------|
+| buffer                            |   A      |A       |  NA  |  NA |  NA       |
+| map                               |   A      |A       |  NA  |  NA |  NA       |
+| flatMap                           |   A      |A       |  A   |  A  |  NA       |
+| concatMap                         |   A      |A       |  NA  |  A  |  NA       |
+| concatMap                         |   A      |A       |  NA  |  A  |  NA       |
+| concatMapDelayError               |   A      |A       |  NA  |  NA |  NA       |
+| switchMap                         |   A      |A       |  NA  |  NA |  NA       |
+| groupBy                           |   A      |A       |  NA  |  NA |  NA       |
+| scan                              |   A      |A       |  NA  |  NA |  NA       |
+| reduce                            |   A      |A       |  NA  |  NA |  NA       |
+| flatMapCompletable                |   A      |A       |  NA  |  NA |  NA       |
+| concatMapCompletable              |   A      |A       |  NA  |  NA |  NA       |
+| concatMapCompletableDelayError    |   A      |A       |  NA  |  NA |  NA       |
+| flatMapMaybe                      |   A      |A       |  NA  |  NA |  NA       |
+| concatMapMaybe                    |   A      |A       |  NA  |  NA |  NA       |
+| flatMapIterable                   |   A      |A       |  NA  |  NA |  NA       |
+| concatMapIterable                 |   A      |A       |  NA  |  NA |  NA       |
+| window                            |   A      |A       |  NA  |  NA |  NA       |
+| cast                              |   A      |A       |  A   |  A  |  NA       |
+| flatMapSingle                     |   A      |A       |  NA  |  A  |  NA       |
+| concatMapSingle                   |   A      |A       |  NA  |  NA |  NA       |
+| concatMapSingleDelayError         |   A      |A       |  NA  |  NA |  NA       |
+| concatMapEager                    |   A      |A       |  NA  |  NA |  NA       |
+| concatMapEagerDelayError          |   A      |A       |  NA  |  NA |  NA       |
+| flattenAsObservable               |   NA     |NA      |  A   |  A  |  NA       |
+| flattenAsFlowable                 |   NA     |NA      |  A   |  A  |  NA       |
+| flatMapObservable                 |   NA     |NA      |  A   |  A  |  NA       |
+| flatMapSingleElement              |   NA     |NA      |  NA  |  A  |  NA       |
+

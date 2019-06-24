@@ -15,6 +15,7 @@ Through these operators we can create a observable.
 * [repeatUntil](#repeatuntil-operator)
 * [interval](#interval-operator)
 * [timer](#timer-operator)
+* [Availability Table](#availability-table)
 
 ### create Operator
    
@@ -618,4 +619,20 @@ Suppose if you want to specify the scheduler explicitly then use the below timer
      Observable.timer(1, TimeUnit.SECONDS, Schedulers.io())
      ```
 
+### Availability Table
 
+A - Available, NA - Not Available
+
+| Operators                         |Observable|Flowable|Single|Maybe|Completable|
+|-----------------------------------|----------|--------|------|-----|-----------|
+| create                            |   A      |A       |  A   |  A  |   A       |
+| just                              |   A      |A       |  A   |  A  |   NA      |
+| defer                             |   A      |A       |  A   |  A  |   A       |
+| fromArray                         |   A      |A       |  NA  |  NA |   NA      |
+| fromCallable                      |   A      |A       |  A   |  A  |   A       |
+| fromIterable                      |   A      |A       |  NA  |  NA |   NA      |
+| fromFuture                        |   A      |A       |  A   |  A  |   A       |
+| range                             |   A      |A       |  NA  |  NA |   NA      |
+| repeat                            |   A      |A       |  A   |  A  |   A       |
+| interval                          |   A      |A       |  NA  |  NA |   NA      |
+| timer                             |   A      |A       |  A   |  A  |   A       |
