@@ -1,1 +1,1 @@
-include ':app', ':basicoperators', ':transformoperators', ':observables', ':api'
+include ':app', ':basicoperators', ':transformoperators', ':observables', ':api', ':combineoperators'

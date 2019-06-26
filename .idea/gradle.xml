@@ -11,6 +11,7 @@
             <option value="$PROJECT_DIR$/api" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/basicoperators" />
+            <option value="$PROJECT_DIR$/combineoperators" />
             <option value="$PROJECT_DIR$/observables" />
             <option value="$PROJECT_DIR$/transformoperators" />
           </set>
