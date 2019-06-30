@@ -1337,7 +1337,7 @@ It does the job however the Single always needs to be converted to an Observable
 this `flatMapSingle` was introduced. See the below example to understand it more clear.
 
 ```
-val location = ArrayList<String>()
+        val location = ArrayList<String>()
         location.add("9.925201,78.119774")
         location.add("13.082680,80.270721")
         location.add("10.073132,78.780151")

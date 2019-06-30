@@ -1,24 +1,29 @@
 package com.hari.combineoperator
 
+import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Context
+import com.hari.api.model.MenuObject
+import com.hari.api.model.RestaurantObject
 import com.hari.api.model.Restaurants
+import com.hari.api.model.UserReviewsObject
 import com.hari.api.network.Api
 import com.hari.api.network.ApiEndPoint
+import com.hari.api.utils.AppUtils
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import io.reactivex.functions.BiFunction
+import io.reactivex.functions.Consumer
+import io.reactivex.functions.Function
 import io.reactivex.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 
 /**
  * @author Hari Hara Sudhan.N
  */
 class CombineOperatorsPresenter(private val context: Context) {
-
-    fun startWith() {
-
-    }
 
     fun mergeWith() {
         val firstLocation = DoubleArray(2)
@@ -118,5 +123,73 @@ class CombineOperatorsPresenter(private val context: Context) {
                         System.out.println("mergeDelayError onError $error")
                     }
                 })
+    }
+
+    fun zip(latitude: Double, longitude: Double) {
+        val progressBar = ProgressDialog(context)
+        val endPoint = Api.getClient().create(ApiEndPoint::class.java)
+        endPoint.getRestaurantsAtLocation(latitude, longitude, 0, 5)
+                .subscribeOn(Schedulers.io())
+                .flatMapIterable { it.restaurants }
+                .concatMapEagerDelayError(object : Function<RestaurantObject,Observable<RestaurantObject>>{
+                    override fun apply(restaurantObject: RestaurantObject): Observable<RestaurantObject> {
+
+                        val reviewObservable = endPoint.getRestaurantReview(restaurantObject.restaurant.id, 0, 3)
+                                .subscribeOn(Schedulers.io())
+                        val menuObservable = endPoint.getRestaurantDailyMenu(restaurantObject.restaurant.id)
+                                .subscribeOn(Schedulers.io())
+
+                        return Observable.zip(reviewObservable, menuObservable, object : BiFunction<UserReviewsObject, MenuObject, RestaurantObject> {
+                            override fun apply(review: UserReviewsObject, menu: MenuObject): RestaurantObject {
+                                restaurantObject.restaurant.review = review
+                                restaurantObject.restaurant.menu = menu
+                                return restaurantObject
+                            }
+                        })
+                    }
+                }, true)
+                .observeOn(AndroidSchedulers.mainThread(), true)
+                .subscribe(object : Observer<RestaurantObject> {
+                    override fun onComplete() {
+                        progressBar.dismiss()
+                        System.out.println("zip onComplete")
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        progressBar.show()
+                        System.out.println("zip onSubscribe")
+                    }
+
+                    override fun onNext(restaurant: RestaurantObject) {
+                        System.out.println("zip onNext "+restaurant.restaurant.name)
+                        System.out.println("zip onNext "+restaurant.restaurant.review?.userReviews?.size)
+                        System.out.println("zip onNext "+restaurant.restaurant.menu?.menuList?.size)
+                    }
+
+                    override fun onError(error: Throwable) {
+                        progressBar.dismiss()
+                        System.out.println("zip onError $error")
+                    }
+                })
+    }
+
+    @SuppressLint("CheckResult")
+    fun combineLatest(userNameObservable: Observable<CharSequence>,
+                      passwordObservable: Observable<CharSequence>,
+                      signUpButtonConsumer: Consumer<in Boolean>,
+                      errorConsumer: Consumer<Throwable>) {
+        Observable.combineLatest(userNameObservable, passwordObservable, object : BiFunction<CharSequence, CharSequence, Boolean> {
+            @Throws(Exception::class)
+            override fun apply(userName: CharSequence, password: CharSequence): Boolean {
+                System.out.println("combineLatest UserName : $userName and Password : $password")
+                return AppUtils.isValidMail(userName) && AppUtils.isValidPassword(password)
+            }
+        })
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(signUpButtonConsumer, errorConsumer)
+    }
+
+    fun startWith() {
+
     }
 }

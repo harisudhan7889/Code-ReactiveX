@@ -67,7 +67,6 @@ class TransformOperatorsActivity : AppCompatActivity(),
                 longitude = location.longitude
             }
         }
-
     }
 
     private val presenter by lazy {

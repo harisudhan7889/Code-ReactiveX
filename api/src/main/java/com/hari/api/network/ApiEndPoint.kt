@@ -1,9 +1,9 @@
 package com.hari.api.network
 
+import com.hari.api.model.MenuObject
 import com.hari.api.model.Restaurants
 import com.hari.api.model.UserReviewsObject
 import io.reactivex.Maybe
-import io.reactivex.MaybeSource
 import io.reactivex.Observable
 import io.reactivex.Single
 import retrofit2.http.GET
@@ -25,6 +25,9 @@ interface ApiEndPoint {
     @GET("api/v2.1/reviews")
     fun getRestaurantReview(@Query("res_id") restaurantId: String,
                             @Query("start") start: Int, @Query("count") count: Int): Observable<UserReviewsObject>
+
+    @GET("api/v2.1/dailymenu")
+    fun getRestaurantDailyMenu(@Query("res_id") restaurantId: String): Observable<MenuObject>
 
     @GET("api/v2.1/search")
     fun getRestaurantsAtLocationSingle(@Query("lat") lat: Double, @Query("lon") lon: Double,

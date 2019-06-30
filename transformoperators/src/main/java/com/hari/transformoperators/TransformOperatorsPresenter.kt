@@ -6,6 +6,7 @@ import android.text.TextUtils
 import com.hari.api.model.*
 import com.hari.api.network.Api
 import com.hari.api.network.ApiEndPoint
+import com.hari.api.utils.AppUtils.getWorldCupWinners
 import com.hari.transformoperators.model.Bike
 import com.hari.transformoperators.model.Car
 import com.hari.transformoperators.model.Vehicle
@@ -16,8 +17,6 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subscribers.DisposableSubscriber
-import org.reactivestreams.Subscriber
-import org.reactivestreams.Subscription
 import java.util.concurrent.TimeUnit
 
 /**
@@ -716,27 +715,5 @@ class TransformOperatorsPresenter(private val context: Context) {
         vehicles.add(car3)
         vehicles.add(car4)
         return vehicles
-    }
-
-    private fun getWorldCupWinners(): MutableList<WinningCount> {
-        val countries = mutableListOf<WinningCount>()
-        val valueArray: Array<String> = arrayOf(
-            "West Indies",
-            "West Indies",
-            "India",
-            "Australia",
-            "Pakistan",
-            "Sri Lanka",
-            "Australia",
-            "Australia",
-            "Australia",
-            "India",
-            "Australia"
-        )
-
-        for (i in 0 until valueArray.size - 1) {
-            countries.add(WinningCount(valueArray[i]))
-        }
-        return countries
     }
 }
