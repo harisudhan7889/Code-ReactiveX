@@ -38,6 +38,7 @@ class CombineOperatorsActivity : AppCompatActivity(),
         merge.setOnClickListener(this)
         mergeDelayError.setOnClickListener(this)
         zip.setOnClickListener(this)
+        join.setOnClickListener(this)
         initRxBindingsForCombineLatest()
     }
 
@@ -87,6 +88,9 @@ class CombineOperatorsActivity : AppCompatActivity(),
           }
           zip -> {
               presenter.zip(latitude, longitude)
+          }
+          join -> {
+              presenter.join(latitude, longitude)
           }
       }
     }

@@ -18,7 +18,6 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Consumer
 import io.reactivex.functions.Function
 import io.reactivex.schedulers.Schedulers
-import java.util.concurrent.TimeUnit
 
 /**
  * @author Hari Hara Sudhan.N
@@ -189,7 +188,11 @@ class CombineOperatorsPresenter(private val context: Context) {
           .subscribe(signUpButtonConsumer, errorConsumer)
     }
 
-    fun startWith() {
+    fun join(latitude: Double, longitude: Double) {
+        //Todo Yet to implement
+    }
 
+    fun startWith() {
+        //Todo Yet to implement
     }
 }

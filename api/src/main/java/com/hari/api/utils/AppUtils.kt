@@ -24,7 +24,7 @@ object AppUtils {
                 "Australia"
         )
 
-        for (i in 0 until valueArray.size - 1) {
+        for (i in 0 until valueArray.size) {
             countries.add(WinningCount(valueArray[i]))
         }
         return countries

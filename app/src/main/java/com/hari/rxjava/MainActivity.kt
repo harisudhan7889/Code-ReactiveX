@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import com.hari.basicoperators.BasicOperatorsActivity
 import com.hari.combineoperator.CombineOperatorsActivity
+import com.hari.mathandaggreateoperators.MathAndAggregateActivity
 import com.hari.observables.ObservablesActivity
 import com.hari.transformoperators.TransformOperatorsActivity
 import kotlinx.android.synthetic.main.activity_main.*
@@ -21,6 +22,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         transformOperators.setOnClickListener(this)
         observableType.setOnClickListener(this)
         combineOperator.setOnClickListener(this)
+        mathOperator.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
@@ -36,6 +38,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
             combineOperator -> {
                 startActivity(CombineOperatorsActivity.getIntent(this))
+            }
+            mathOperator -> {
+                startActivity(MathAndAggregateActivity.getIntent(this))
             }
         }
     }

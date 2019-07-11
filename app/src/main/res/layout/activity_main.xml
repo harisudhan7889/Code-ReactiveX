@@ -54,4 +54,19 @@
         app:layout_constraintTop_toBottomOf="@+id/observableType"
         app:layout_constraintVertical_bias="0.037" />
 
+    <Button
+        android:id="@+id/mathOperator"
+        android:layout_width="317dp"
+        android:layout_height="65dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="Math And Aggregate operators"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/combineOperator"
+        app:layout_constraintVertical_bias="0.073" />
+
 </android.support.constraint.ConstraintLayout>
