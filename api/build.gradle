@@ -27,6 +27,8 @@ android {
             properties.load(project.rootProject.file("local.properties").newDataInputStream())
             def zomatoApikey = properties.getProperty("zomato_api_key", "")
             it.buildConfigField('String', 'ZOMATO_API_KEY', zomatoApikey)
+            def countryApikey = properties.getProperty("country_api_key", "")
+            it.buildConfigField('String', 'COUNTRY_API_KEY', countryApikey)
         }
     }
 

@@ -7,7 +7,7 @@ import okhttp3.Response
 /**
  * @author Hari Hara Sudhan.N
  */
-internal class ApiKeyInterceptor : Interceptor {
+internal class RestaurantKeyInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         var request = chain.request()
         request = request?.newBuilder()

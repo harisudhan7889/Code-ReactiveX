@@ -1,5 +1,6 @@
 package com.hari.api.network
 
+import com.hari.api.model.Country
 import com.hari.api.model.MenuObject
 import com.hari.api.model.Restaurants
 import com.hari.api.model.UserReviewsObject
@@ -7,6 +8,7 @@ import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 /**
@@ -41,4 +43,8 @@ interface ApiEndPoint {
     @GET("api/v2.1/reviews")
     fun getRestaurantReviewMaybe(@Query("res_id") restaurantId: String,
                             @Query("start") start: Int, @Query("count") count: Int): Maybe<UserReviewsObject>
+
+    @GET("currency/{currency}")
+    fun getCountryByCurrency(@Path("currency") currency: String): Observable<List<Country>>
+
 }

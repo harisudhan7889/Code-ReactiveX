@@ -270,6 +270,7 @@ Below are the aggregate operators.
 * [reduce](#reduce)
 * [reduceWith](#reducewith)
 * [toList](#tolist)
+* [toSortedList](#tosortedlist)
 
 ### count
 ```
@@ -424,3 +425,228 @@ inside the `call()` - which is called as initial value supplier function.
 This operator is pretty straight forward and simple to understand. 
 Collect all items from an Observable and emit them as a single List.
 
+**When to use in real time?**
+ 
+Suppose If you want to hit multiple network services that returns the same output type and you
+also want to collect all these outputs as single list then you can use `toList`
+
+**Basic Example:**
+```
+Observable.just(1, 2, 3, 4, 5)
+                .toList()
+                .subscribe(object : SingleObserver<List<Int>>{
+                    override fun onSuccess(list: List<Int>) {
+                        list.forEach { System.out.println("$it") }
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        System.out.println("onSubscribe")
+                    }
+
+                    override fun onError(e: Throwable) {
+                        System.out.println("onError $e")
+                    }
+                })
+```
+
+**Output**
+```
+onSubscribe
+1
+2
+3
+4
+5
+```                
+
+**Code Analysis**
+1. From the above code snippet you can easily understand the concept of `toList()`. 
+2. Observable.just() starts to emit the values one by one.
+3. toList() will collect the values emitted by `just` one by one and wait for the emission to complete.
+4. After the emission is completed, toList() will emit the collected values in the form of List.
+5. In the above code, I have just iterated the list output. 
+
+
+**Complex Example**
+
+```
+val progressBar = ProgressDialog(context)
+        val endPoint = Api.getCountryClient().create(ApiEndPoint::class.java)
+        Observable.just("BND", "INR", "AUD")
+                .flatMap(object : Function<String, Observable<List<Country>>>{
+                    override fun apply(currency: String): Observable<List<Country>> {
+                        return endPoint.getCountryByCurrency(currency)
+                    }
+                })
+                .flatMapIterable{it}
+                .toList()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : SingleObserver<List<Country>> {
+                    override fun onSuccess(countries: List<Country>) {
+                        countries.forEach { System.out.println("${it.name}") }
+                        progressBar.dismiss()
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        System.out.println("onSubscribe")
+                        progressBar.show()
+                    }
+
+                    override fun onError(error: Throwable) {
+                        System.out.println("$error")
+                        progressBar.dismiss()
+                    }
+                })
+```
+
+**Output**
+
+```
+ onSubscribe
+ Brunei
+ Bhutan
+ India
+ Antarctica
+ Australia
+ Christmas Island
+ Cocos (Keeling) Islands
+ Heard Island and McDonald Islands
+ Kiribati
+ Nauru
+ Norfolk Island
+ Tuvalu
+```
+
+**Code Analysis**
+1. In the above example, I have hit a network service which gives me the countries with the inputted currency.
+2. `Observable.just("BND", "INR", "AUD")` emits the currency one by one.
+      * **BND - Brunei Dollar** 
+      * **INR - Indian Rupee** 
+      * **AUD - Australian Dollar**
+3. These currencies are emitted one by one to `flatMap` where the network call to get countries using
+these currencies are done.
+4. Here I have use `flatMapIterable` to iterate the result from the service.
+5. For example, when currency **BND** is emitted network service to get the countries list
+those use currency **BND** is called. As a result we get the list of countries. So this list
+is iterated using `flatMapIterable` so these country details are emitted to `toList` one by one. 
+6. `toList()` consumes all the country details for each currencies and finally emit as a single list with
+all these country details.  
+7. So in this example I have just displayed the name of the country in the final list.   
+ 
+
+### toSortedList
+
+This operator is same as `toList()` but the output will be a sorted list.
+Sorting can be done by specifying the required condition. Below basic example 
+gives you a idea how to implement the this operator.
+
+**Basic Example**
+
+```
+Observable.just(1, 5 , 3, 2, 6)
+                .toSortedList(object : Comparator<Int>{
+                    override fun compare(nextItem: Int, currentItem: Int): Int {
+                        return currentItem - nextItem
+                    }
+                }).subscribe(object : SingleObserver<List<Int>>{
+                    override fun onSuccess(sortedList: List<Int>) {
+                        sortedList.forEach { System.out.println("$it") }
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        System.out.println("onSubscribe")
+                    }
+
+                    override fun onError(e: Throwable) {
+                        System.out.println("onError $e")
+                    }
+                })
+```
+
+**Output**
+```
+onSubscribe
+6
+5
+3
+2
+1
+```
+
+**Code Analysis**
+
+1. Code implementation is same as `toList` the only difference is the comparator function which is used inside
+`toSortedList()`. 
+2. This comparator function is the one which compares two items emitted by the source 
+ObservableSource and returns an Integer that indicates their sort order.
+3. Returns the following based on the difference
+    * Zero if these objects are equal.
+    * Negative value if first object is lesser than second.
+    * Positive value if first object is greater than the second.
+4. In the above example I have done a subtract operation inside the comparator function to check which is greater.
+    
+**Complex Example:**
+
+```
+val progressBar = ProgressDialog(context)
+        val endPoint = Api.getCountryClient().create(ApiEndPoint::class.java)
+        Observable.just("BND", "INR", "AUD")
+                .flatMap(object : Function<String, Observable<List<Country>>>{
+                    override fun apply(currency: String): Observable<List<Country>> {
+                        return endPoint.getCountryByCurrency(currency)
+                    }
+                })
+                .flatMapIterable{it}
+                .toSortedList(object : Comparator<Country>{
+                    override fun compare(country1: Country, country2: Country): Int {
+                        return country1.name.compareTo(country2.name)
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : SingleObserver<List<Country>> {
+                    override fun onSuccess(countries: List<Country>) {
+                        countries.forEach { System.out.println("$it") }
+                        progressBar.dismiss()
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        System.out.println("onSubscribe")
+                        progressBar.show()
+                    }
+
+                    override fun onError(error: Throwable) {
+                        System.out.println("onError $error")
+                        progressBar.dismiss()
+                    }
+                })
+```
+
+**Output**
+```
+ onSubscribe
+ Antarctica
+ Australia
+ Bhutan
+ Brunei
+ Christmas Island
+ Cocos (Keeling) Islands
+ Heard Island and McDonald Islands
+ India
+ Kiribati
+ Nauru
+ Norfolk Island
+ Tuvalu
+```
+
+**Code Analysis**
+
+1. The above complex code implementation is same as `toList` the only difference is the comparator function which is used inside
+   `toSortedList()`. 
+2. Here inside the comparator function I have compared two string values to check which string's starting letter is 
+alphabetically ascending.   
+3. Returns the following based on the comparison
+    * Zero if both string's starting letters are equal.
+    * Negative value if second string's starting character is alphabetically ascended.
+    * Positive value if first string's starting character is alphabetically ascended.

@@ -2,7 +2,10 @@ package com.hari.mathandaggreateoperators
 
 import android.app.ProgressDialog
 import android.content.Context
+import com.hari.api.model.Country
 import com.hari.api.model.WinningCount
+import com.hari.api.network.Api
+import com.hari.api.network.ApiEndPoint
 import com.hari.api.utils.AppUtils
 import hu.akarnokd.rxjava2.math.MathObservable
 import io.reactivex.Observable
@@ -12,6 +15,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiConsumer
 import io.reactivex.functions.BiFunction
+import io.reactivex.functions.Function
 import io.reactivex.schedulers.Schedulers
 import java.lang.StringBuilder
 import java.util.Comparator
@@ -279,11 +283,11 @@ class MathAndAggregatePresenter(private val context: Context) {
     }
 
     fun toList() {
-        Observable.just(1,2 ,3, 4, 5)
+        Observable.just(1, 2, 3, 4, 5)
                 .toList()
-                .subscribe(object : SingleObserver<List<Int>>{
+                .subscribe(object : SingleObserver<List<Int>> {
                     override fun onSuccess(list: List<Int>) {
-                        System.out.println("toList onSuccess ${list.size}")
+                        list.forEach { System.out.println("toList : $it") }
                     }
 
                     override fun onSubscribe(d: Disposable) {
@@ -297,14 +301,14 @@ class MathAndAggregatePresenter(private val context: Context) {
     }
 
     fun toSortedList() {
-        Observable.just(1,5 ,3, 2, 6)
-                .toSortedList(object : Comparator<Int>{
+        Observable.just(1, 5, 3, 2, 6)
+                .toSortedList(object : Comparator<Int> {
                     override fun compare(nextItem: Int, currentItem: Int): Int {
-                        return Math.max(currentItem, nextItem)
+                        return currentItem - nextItem
                     }
-                }).subscribe(object : SingleObserver<List<Int>>{
+                }).subscribe(object : SingleObserver<List<Int>> {
                     override fun onSuccess(sortedList: List<Int>) {
-                        System.out.println("toSortedList onSuccess $sortedList")
+                        sortedList.forEach { System.out.println("toSortedList : $it") }
                     }
 
                     override fun onSubscribe(d: Disposable) {
@@ -317,9 +321,74 @@ class MathAndAggregatePresenter(private val context: Context) {
                 })
     }
 
+    fun toListOfCountries() {
+        val progressBar = ProgressDialog(context)
+        val endPoint = Api.getCountryClient().create(ApiEndPoint::class.java)
+        Observable.just("BND", "INR", "AUD")
+                .flatMap(object : Function<String, Observable<List<Country>>>{
+                    override fun apply(currency: String): Observable<List<Country>> {
+                        return endPoint.getCountryByCurrency(currency)
+                    }
+                })
+                .flatMapIterable{it}
+                .toList()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : SingleObserver<List<Country>> {
+                    override fun onSuccess(countries: List<Country>) {
+                        countries.forEach { System.out.println("toList : ${it.name}") }
+                        progressBar.dismiss()
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        System.out.println("onSubscribe")
+                        progressBar.show()
+                    }
+
+                    override fun onError(error: Throwable) {
+                        System.out.println("toList error $error")
+                        progressBar.dismiss()
+                    }
+                })
+    }
+
+    fun toSortedCountriesList() {
+        val progressBar = ProgressDialog(context)
+        val endPoint = Api.getCountryClient().create(ApiEndPoint::class.java)
+        Observable.just("BND", "INR", "AUD")
+                .flatMap(object : Function<String, Observable<List<Country>>>{
+                    override fun apply(currency: String): Observable<List<Country>> {
+                        return endPoint.getCountryByCurrency(currency)
+                    }
+                })
+                .flatMapIterable{it}
+                .toSortedList(object : Comparator<Country>{
+                    override fun compare(country1: Country, country2: Country): Int {
+                        return country1.name.compareTo(country2.name)
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : SingleObserver<List<Country>> {
+                    override fun onSuccess(countries: List<Country>) {
+                        countries.forEach { System.out.println("toSortedList : ${it.name}") }
+                        progressBar.dismiss()
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        System.out.println("onSubscribe")
+                        progressBar.show()
+                    }
+
+                    override fun onError(error: Throwable) {
+                        System.out.println("List of countries Error $error")
+                        progressBar.dismiss()
+                    }
+                })
+    }
+
     private fun getInitialWCWinner(): WinningCount {
         Thread.sleep(2000)
         return WinningCount("")
     }
-
 }

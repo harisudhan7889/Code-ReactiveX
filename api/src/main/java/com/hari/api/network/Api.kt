@@ -15,7 +15,7 @@ class Api {
     companion object {
         fun getClient(): Retrofit {
             val client = OkHttpClient.Builder()
-            client.addInterceptor(ApiKeyInterceptor())
+            client.addInterceptor(RestaurantKeyInterceptor())
 
             // To display the request and response details in log
             val interceptor = HttpLoggingInterceptor()
@@ -28,6 +28,22 @@ class Api {
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
+        }
+
+        fun getCountryClient(): Retrofit {
+            val client = OkHttpClient.Builder()
+            client.addInterceptor(CountryKeyInterceptor())
+            // To display the request and response details in log
+            val interceptor = HttpLoggingInterceptor()
+            interceptor.level = HttpLoggingInterceptor.Level.HEADERS
+            client.addInterceptor(interceptor)
+
+            return Retrofit.Builder()
+                    .baseUrl("https://restcountries-v1.p.rapidapi.com/")
+                    .client(client.build())
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build()
         }
     }
 }

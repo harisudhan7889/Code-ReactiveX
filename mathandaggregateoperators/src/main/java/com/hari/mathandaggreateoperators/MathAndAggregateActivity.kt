@@ -34,6 +34,8 @@ class MathAndAggregateActivity : AppCompatActivity(), View.OnClickListener {
         reduceWith2.setOnClickListener(this)
         toList.setOnClickListener(this)
         toSortedList.setOnClickListener(this)
+        toListCountries.setOnClickListener(this)
+        toSortedCountriesList.setOnClickListener(this)
     }
 
     private val presenter by lazy {
@@ -80,6 +82,12 @@ class MathAndAggregateActivity : AppCompatActivity(), View.OnClickListener {
             }
             toSortedList -> {
                 presenter.toSortedList()
+            }
+            toListCountries -> {
+                presenter.toListOfCountries()
+            }
+            toSortedCountriesList -> {
+                presenter.toSortedCountriesList()
             }
         }
     }
