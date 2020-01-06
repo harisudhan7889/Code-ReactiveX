@@ -1,10 +1,13 @@
 package com.hari.rxjava
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.ContactsContract
+import android.provider.UserDictionary
+import android.support.v7.app.AppCompatActivity
 import android.view.View
 import com.hari.basicoperators.BasicOperatorsActivity
 import com.hari.combineoperator.CombineOperatorsActivity
+import com.hari.errorhandling.ErrorHandlerActivity
 import com.hari.mathandaggreateoperators.MathAndAggregateActivity
 import com.hari.observables.ObservablesActivity
 import com.hari.transformoperators.TransformOperatorsActivity
@@ -23,6 +26,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         observableType.setOnClickListener(this)
         combineOperator.setOnClickListener(this)
         mathOperator.setOnClickListener(this)
+        errorHandler.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
@@ -42,6 +46,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             mathOperator -> {
                 startActivity(MathAndAggregateActivity.getIntent(this))
             }
+            errorHandler -> {
+                startActivity(ErrorHandlerActivity.getIntent(this))
+            }
         }
     }
+
 }

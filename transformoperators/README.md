@@ -1674,8 +1674,8 @@ onComplete
 ### flatMapObservable
 
 `flatMapObservable` will work same as `flattenAsObservable` 
-but the difference is `flattenAsObservable` will return only Observable<Iterator>
-but `flatMapObservable` will return Observable<Any>. And this 
+but the difference is `flattenAsObservable` will return only `Observable<Iterator>`
+but `flatMapObservable` will return `Observable<Any>`. And this 
 operator is available only for `Single` and `Maybe` types.
 
 ```
