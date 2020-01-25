@@ -51,10 +51,11 @@ It enables us to do complex things very simple. It provides us the power.
  
 RxJava is a JVM implementation of ReactiveX. Let see all about RxJava and its Operators
 
-1. [Schedulers](Schedulers/README.md)
+1. [Schedulers](schedulers/README.md)
 2. [Basic Operators](basicoperators/README.md)
 3. [Observable and Observer Types](observables/README.md)
 4. [Transform Operators](transformoperators/README.md)
 5. [Combining Operators](combineoperators/README.md)
 6. [Mathematic and Aggregate Operators](mathandaggregateoperators/README.md)
 7. [Error Handling](errorhandling/README.md)
+8. [Subjects](subjects/README.md)

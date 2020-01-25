@@ -10,6 +10,7 @@ import com.hari.combineoperator.CombineOperatorsActivity
 import com.hari.errorhandling.ErrorHandlerActivity
 import com.hari.mathandaggreateoperators.MathAndAggregateActivity
 import com.hari.observables.ObservablesActivity
+import com.hari.subjects.SubjectsActivity
 import com.hari.transformoperators.TransformOperatorsActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -27,6 +28,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         combineOperator.setOnClickListener(this)
         mathOperator.setOnClickListener(this)
         errorHandler.setOnClickListener(this)
+        subject.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
@@ -48,6 +50,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
             errorHandler -> {
                 startActivity(ErrorHandlerActivity.getIntent(this))
+            }
+            subject -> {
+                startActivity(SubjectsActivity.getIntent(this))
             }
         }
     }

@@ -85,4 +85,15 @@
         app:layout_constraintTop_toBottomOf="@+id/mathOperator"
         app:layout_constraintVertical_bias="0.123" />
 
+    <Button
+            android:id="@+id/subject"
+            android:layout_width="313dp"
+            android:layout_height="61dp"
+            android:text="Subject"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/errorHandler"
+            app:layout_constraintVertical_bias="0.185" />
+
 </android.support.constraint.ConstraintLayout>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <Button
+            android:id="@+id/withoutSubject"
+            android:layout_width="359dp"
+            android:layout_height="71dp"
+            android:text="Without Subject Example"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.557"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.024" />
+
+    <Button
+            android:id="@+id/withSubject"
+            android:layout_width="349dp"
+            android:layout_height="67dp"
+            android:text="With Subject Example"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/withoutSubject"
+            app:layout_constraintVertical_bias="0.027" />
+
+    <Button
+            android:id="@+id/connectableObservable"
+            android:layout_width="346dp"
+            android:layout_height="63dp"
+            android:text="Connectable Observable"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.523"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/withSubject"
+            app:layout_constraintVertical_bias="0.019" />
+
+    <Button
+            android:id="@+id/observableWithRefCount"
+            android:layout_width="351dp"
+            android:layout_height="63dp"
+            android:text="Observable With RefCount"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.483"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/connectableObservable"
+            app:layout_constraintVertical_bias="0.04" />
+
+    <Button
+            android:id="@+id/observableWithRefCountValue"
+            android:layout_width="351dp"
+            android:layout_height="63dp"
+            android:text="Observable With RefCount Value"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.483"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/observableWithRefCount"
+            app:layout_constraintVertical_bias="0.034" />
+
+    <Button
+            android:id="@+id/observableWithRefCountTimer"
+            android:layout_width="351dp"
+            android:layout_height="63dp"
+            android:text="Observable With RefCount Timer"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.483"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/observableWithRefCountValue"
+            app:layout_constraintVertical_bias="0.051" />
+
+</android.support.constraint.ConstraintLayout>

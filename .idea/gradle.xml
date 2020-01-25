@@ -15,10 +15,12 @@
             <option value="$PROJECT_DIR$/errorhandling" />
             <option value="$PROJECT_DIR$/mathandaggregateoperators" />
             <option value="$PROJECT_DIR$/observables" />
+            <option value="$PROJECT_DIR$/subjects" />
             <option value="$PROJECT_DIR$/transformoperators" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
+        <option name="testRunner" value="PLATFORM" />
       </GradleProjectSettings>
     </option>
   </component>

@@ -10,6 +10,7 @@
       <module fileurl="file://$PROJECT_DIR$/errorhandling/errorhandling.iml" filepath="$PROJECT_DIR$/errorhandling/errorhandling.iml" />
       <module fileurl="file://$PROJECT_DIR$/mathandaggregateoperators/mathandaggregateoperators.iml" filepath="$PROJECT_DIR$/mathandaggregateoperators/mathandaggregateoperators.iml" />
       <module fileurl="file://$PROJECT_DIR$/observables/observables.iml" filepath="$PROJECT_DIR$/observables/observables.iml" />
+      <module fileurl="file://$PROJECT_DIR$/subjects/subjects.iml" filepath="$PROJECT_DIR$/subjects/subjects.iml" />
       <module fileurl="file://$PROJECT_DIR$/transformoperators/transformoperators.iml" filepath="$PROJECT_DIR$/transformoperators/transformoperators.iml" />
     </modules>
   </component>
