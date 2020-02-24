@@ -1,6 +1,6 @@
 ## Conditional and Boolean operators
 
-These operators are easy to understand.
+These operators are easy to understand and straightforward.
 
 * [all](#all-operator) 
 * [amb](#amb-operator) 
@@ -14,7 +14,7 @@ These operators are easy to understand.
 * [takeWhile](#takewhile-operator)
 
 
-### all Operator
+### all operator
 
 This operator check whether all items emitted by an Observable meet some criteria and emits boolean value to the
 observer.

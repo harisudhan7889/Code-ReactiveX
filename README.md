@@ -58,5 +58,6 @@ RxJava is a JVM implementation of ReactiveX. Let see all about RxJava and its Op
 5. [Combining Operators](combineoperators/README.md)
 6. [Mathematic and Aggregate Operators](mathandaggregateoperators/README.md)
 7. [Filter Operator](filteroperators/README.md)
-8. [Error Handling](errorhandling/README.md)
-9. [Subjects](subjects/README.md)
+8. [Conditional and Boolean Operator](conditionalandboolean/README.md)
+9. [Error Handling](errorhandling/README.md)
+10. [Subjects](subjects/README.md)
