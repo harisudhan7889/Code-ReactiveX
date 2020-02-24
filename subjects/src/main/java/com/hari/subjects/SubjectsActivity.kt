@@ -31,6 +31,8 @@ class SubjectsActivity: AppCompatActivity(), View.OnClickListener {
         observableWithRefCount.setOnClickListener(this)
         observableWithRefCountValue.setOnClickListener(this)
         observableWithRefCountTimer.setOnClickListener(this)
+        observableWithAutoConnect.setOnClickListener(this)
+        autoConnectWithNoOfObservers.setOnClickListener(this)
     }
 
     override fun onClick(v: View) {
@@ -52,6 +54,12 @@ class SubjectsActivity: AppCompatActivity(), View.OnClickListener {
             }
             observableWithRefCountTimer -> {
                 presenter.observableWithRefCountTimeout()
+            }
+            observableWithAutoConnect -> {
+                presenter.observableWithAutoConnect()
+            }
+            autoConnectWithNoOfObservers -> {
+                presenter.observableWithAutoConnectObservers()
             }
         }
     }

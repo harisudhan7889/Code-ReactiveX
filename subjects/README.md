@@ -4,6 +4,8 @@
 * [Hot Observable](#hot-observables)
 * [Connectable Observable](#connectable-observable)
 * [refCount](#refcount)
+* [share](#share)
+* [autoConnect](#autoconnect)
 
 ### Subject
 
@@ -54,8 +56,8 @@ Observer two: 9
 3. Don't get confused by the term new Observable, which means again the observable start from the first.
 4. In this case again the observable start to emit the range from 1 till length of 3 for every Observer.
 5. So all the operations will be started from the first. For example in this code snippet, 
-you will note that for each Observer, the map() operation is being carried out twice. 
-So if we had 10 Observers, the map() operation would be carried out 10 times before the integer is emitted. 
+you will note that for each Observer, the map() operation is being carried out. 
+So if we had 10 Observers, the map() operation would be carried out for all the 10 observers. 
 
 It is not really needed to initiate the map operator for every Observers right?. 
 So how can we avoid this? 
@@ -67,8 +69,8 @@ subscribed to an Observable.
 3. Let us add the `observer1` and `observer2` to this container class and subscribe this class to Observable.
 4. As usual Observable will emit items and further operations will be carried over. 
 5. Finally processed data will be passed to the container class. 
-6. Now this container class should capable of emitting data to the `observer1` and `observer2`. 
-So I am extending this container class with Observable. Now this container class can be called as Subject.
+6. Now this container class should capable of emitting data to the `observer1` and `observer2` as these observers
+are present inside this container. So I am extending this container class with Observable. Thus this container class can be called as Subject.
 7. So Subject will keep track of already executed operations (in our case it is `map` operation) and will
 not initiate it again for the next subscribers instead emit the already processed item to multiple subscribers. 
 This is called Multicasting.
@@ -112,7 +114,12 @@ Observer1 onComplete
 Observer2 onComplete
 ```
   
-I hope everyone understand the concept of Subject.
+I hope everyone understand the concept of Subject. 
+Let us see the different types of subjects
+
+**PublishSubject**
+
+
 
 What is next? 
  
@@ -139,8 +146,8 @@ so the click observable has no need to cache them for replay.
 We have two ways of creating hot observable as follow
 
 1. **Subject:** Using subject, we can not only convert the cold into hot observable but also 
-can create the hot observable from scratch. We have already discussed what is subject? in
-the above section, so we have to see the types of subject. 
+can create the hot observable from scratch. We have already discussed about subject in
+the above section. 
 
 2. **ConnectableObservable:** By using ConnectableObservable, we can only convert the cold observable into hot observable by using 
 its publish and connect methods and various variants like refCount, autoConnect and replay etc. 
@@ -487,3 +494,131 @@ printed that too until timeout of 12000 milliseconds and after the timeout the c
 
 4. One more important point here is after the timeout if any of the observer is still not yet disposed 
 and the connection to the upstream is still alive then refCount will reschedule the timeout.  
+
+**refCount(timeout: Long, unit: TimeUnit, scheduler: Scheduler):**
+
+This operator is same as the above one but here we have a proficiency to add the Scheduler. 
+This refCount operates on the specified Scheduler.
+
+**refCount(subscriberCount: Int, timeout: Long, unit: TimeUnit, scheduler: Scheduler):** 
+
+Instructs a ConnectableObservable to start emitting items at any time it see the mentioned no of subscriber with
+timeout and scheduler options included.
+
+### share
+
+This operator is the combination of **publish() + refCount()**
+
+Just you have to change `Observable.publish().refCount()` to `Observable.share()`. 
+
+### autoConnect
+
+
+**autoConnect():**
+
+Instructs a ConnectableObservable to start emitting items at any time it see at least one subscriber. 
+You might think that this definition looks same as that of refCount. Yes it is but there is a
+difference between these two operators. autoConnect() will never renew the connection if the source
+terminates, no matter how Observers come and go. But refCount() will renew the connection if the source terminates.
+
+```
+val observable = Observable.range(1, 3)
+            .subscribeOn(Schedulers.io())
+            .map(object : Function<Int, Int> {
+                override fun apply(input: Int): Int {
+                    println("Inside map operator Squaring the input")
+                    return input * input
+                }
+            })
+
+val autoConnectObservable = observable.publish().autoConnect()
+println("Wait for 3 seconds for observer1 to subscribe")
+Thread.sleep(3000)
+autoConnectObservable.subscribe(observer1)
+println("Wait for another 3 seconds for observer2 to subscribe")
+Thread.sleep(3000)
+autoConnectObservable.subscribe(observer2)
+```
+
+**Output**
+
+```
+Wait for 3 seconds for observer1 to subscribe
+Observer1 onSubscribe
+Wait for another 3 seconds for observer2 to subscribe
+Inside map operator Squaring the input
+Observer1 Output 1
+Inside map operator Squaring the input
+Observer1 Output 4
+Inside map operator Squaring the input
+Observer1 Output 9
+Observer1 onComplete
+Observer2 onSubscribe
+```
+
+**Analysis**
+
+To check how `autoConnect()` operator will work, I have given a delay of 3000 milliseconds between each subscription. 
+In the output you can see that subscription, map operation and consumption for observer1 is carried out perfectly but
+for observer2 only `onSubscribe` is being called. This is because of the delay before subscribing observer2, 
+so in the mean time the source completes the task and closes its connection. When observer2 subscribes after 3000 milliseconds, 
+source is not creating a new connection.
+
+**autoConnect(numberOfSubscribers: Int):**
+
+This is same as `autoConnect()` but it includes parameter **numberOfSubscribers** 
+thus it instructs the ConnectableObservable to start emitting items at any time 
+it see the mentioned no of subscriber. Lets see the same example that we discussed for
+`autoConnect()`
+
+```
+val observable = Observable.range(1, 3)
+            .subscribeOn(Schedulers.io())
+            .map(object : Function<Int, Int> {
+                override fun apply(input: Int): Int {
+                    println("Inside map operator Squaring the input")
+                    return input * input
+                }
+            })
+
+val autoConnectObservable = observable.publish().autoConnect(2)
+println("Wait for 3 seconds for observer1 to subscribe")
+Thread.sleep(3000)
+autoConnectObservable.subscribe(observer1)
+println("Wait for another 3 seconds for observer2 to subscribe")
+Thread.sleep(3000)
+autoConnectObservable.subscribe(observer2)
+```
+
+**Output**
+
+```
+Wait for 3 seconds for observer1 to subscribe
+Observer1 onSubscribe
+Wait for another 3 seconds for observer2 to subscribe
+Observer2 onSubscribe
+Inside map operator Squaring the input
+Observer1 Output 1
+Observer2 Output 1
+Inside map operator Squaring the input
+Observer1 Output 4
+Observer2 Output 4
+Inside map operator Squaring the input
+Observer1 Output 9
+Observer2 Output 9
+Observer1 onComplete
+Observer2 onComplete
+```
+
+**Analysis**
+
+From the output you can see the difference between `autoConnect()` and `autoConnect(numberOfSubscribers: Int)`. 
+It is clear that only after Observer2's subscription the autoConnect operator 
+instructs the ConnectableObservable to start emitting. This is due to the `noOfSubscribers` we have mentioned as 2. 
+If we have mentioned noOfSubscribers as 3 then after the third observer's subscription emission will be started.
+
+
+
+
+
+

@@ -7,7 +7,9 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import com.hari.basicoperators.BasicOperatorsActivity
 import com.hari.combineoperator.CombineOperatorsActivity
+import com.hari.conditionalandboolean.ConditionalOperatorActivity
 import com.hari.errorhandling.ErrorHandlerActivity
+import com.hari.filteroperators.FilterOperatorsActivity
 import com.hari.mathandaggreateoperators.MathAndAggregateActivity
 import com.hari.observables.ObservablesActivity
 import com.hari.subjects.SubjectsActivity
@@ -27,6 +29,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         observableType.setOnClickListener(this)
         combineOperator.setOnClickListener(this)
         mathOperator.setOnClickListener(this)
+        filterOperator.setOnClickListener(this)
+        conditionalOperator.setOnClickListener(this)
         errorHandler.setOnClickListener(this)
         subject.setOnClickListener(this)
     }
@@ -47,6 +51,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
             mathOperator -> {
                 startActivity(MathAndAggregateActivity.getIntent(this))
+            }
+            filterOperator -> {
+                startActivity(FilterOperatorsActivity.getIntent(this))
+            }
+            conditionalOperator -> {
+                startActivity(ConditionalOperatorActivity.getIntent(this))
             }
             errorHandler -> {
                 startActivity(ErrorHandlerActivity.getIntent(this))

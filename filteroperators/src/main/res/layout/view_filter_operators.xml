@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <Button
+                android:id="@+id/distinct"
+                android:layout_width="359dp"
+                android:layout_height="71dp"
+                android:text="Distinct Operator"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.557"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.024" />
+
+        <Button
+                android:id="@+id/elementAt"
+                android:layout_width="359dp"
+                android:layout_height="71dp"
+                android:text="ElementAt Operator"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.557"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/distinct"
+                app:layout_constraintVertical_bias="0.039" />
+
+        <Button
+                android:id="@+id/elementAtOrError"
+                android:layout_width="359dp"
+                android:layout_height="71dp"
+                android:text="ElementAtOrError Operator"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.557"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/elementAt"
+                app:layout_constraintVertical_bias="0.047" />
+
+        <Button
+                android:id="@+id/elementAtWithDefaultValue"
+                android:layout_width="359dp"
+                android:layout_height="71dp"
+                android:text="ElementAt With Default Value Operator"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.557"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/elementAtOrError"
+                app:layout_constraintVertical_bias="0.048" />
+
+        <Button
+                android:id="@+id/filter"
+                android:layout_width="359dp"
+                android:layout_height="71dp"
+                android:text="Filter"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.557"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/elementAtWithDefaultValue"
+                app:layout_constraintVertical_bias="0.048" />
+
+        <Button
+                android:id="@+id/ignoreElements"
+                android:layout_width="359dp"
+                android:layout_height="71dp"
+                android:text="Ignore Elements"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.557"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/filter"
+                app:layout_constraintVertical_bias="0.048" />
+
+        <Button
+                android:id="@+id/skip"
+                android:layout_width="359dp"
+                android:layout_height="71dp"
+                android:text="Skip"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.557"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ignoreElements"
+                app:layout_constraintVertical_bias="0.048" />
+
+        <Button
+                android:id="@+id/skipLast"
+                android:layout_width="359dp"
+                android:layout_height="71dp"
+                android:text="Skip Last"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintHorizontal_bias="0.557"
+                app:layout_constraintTop_toBottomOf="@+id/skip"
+                app:layout_constraintVertical_bias="0.048" />
+
+        <Button
+                android:id="@+id/skipWhile"
+                android:layout_width="359dp"
+                android:layout_height="71dp"
+                android:text="Skip Until"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/skipLast"
+                app:layout_constraintVertical_bias="0.048" />
+
+        <Button
+                android:id="@+id/take"
+                android:layout_width="359dp"
+                android:layout_height="71dp"
+                android:text="Take"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/skipWhile"
+                app:layout_constraintVertical_bias="0.048" />
+
+        <Button
+                android:id="@+id/takeLast"
+                android:layout_width="359dp"
+                android:layout_height="71dp"
+                android:text="TakeLast"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/take"
+                app:layout_constraintVertical_bias="0.048" />
+
+    </android.support.constraint.ConstraintLayout>
+</ScrollView>

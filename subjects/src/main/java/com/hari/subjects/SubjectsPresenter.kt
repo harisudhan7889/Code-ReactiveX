@@ -187,4 +187,42 @@ class SubjectsPresenter(private val context: Context) {
         observer3.dispose()
         observer4.dispose()
     }
+
+    fun observableWithAutoConnect() {
+        val observable = Observable.range(1, 3)
+            .subscribeOn(Schedulers.io())
+            .map(object : Function<Int, Int> {
+                override fun apply(input: Int): Int {
+                    println("Inside map operator Squaring the input")
+                    return input * input
+                }
+            })
+
+        val autoConnectObservable = observable.publish().autoConnect()
+        println("Wait for 3 seconds for observer1 to subscribe")
+        Thread.sleep(3000)
+        autoConnectObservable.subscribe(observer1)
+        println("Wait for another 3 seconds for observer2 to subscribe")
+        Thread.sleep(3000)
+        autoConnectObservable.subscribe(observer2)
+    }
+
+    fun observableWithAutoConnectObservers() {
+        val observable = Observable.range(1, 3)
+            .subscribeOn(Schedulers.io())
+            .map(object : Function<Int, Int> {
+                override fun apply(input: Int): Int {
+                    println("Inside map operator Squaring the input")
+                    return input * input
+                }
+            })
+
+        val autoConnectObservable = observable.publish().autoConnect(2)
+        println("Wait for 3 seconds for observer1 to subscribe")
+        Thread.sleep(3000)
+        autoConnectObservable.subscribe(observer1)
+        println("Wait for another 3 seconds for observer2 to subscribe")
+        Thread.sleep(3000)
+        autoConnectObservable.subscribe(observer2)
+    }
 }

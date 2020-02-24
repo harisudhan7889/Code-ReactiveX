@@ -7,7 +7,9 @@
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/basicoperators/basicoperators.iml" filepath="$PROJECT_DIR$/basicoperators/basicoperators.iml" />
       <module fileurl="file://$PROJECT_DIR$/combineoperators/combineoperators.iml" filepath="$PROJECT_DIR$/combineoperators/combineoperators.iml" />
+      <module fileurl="file://$PROJECT_DIR$/conditionalandboolean/conditionalandboolean.iml" filepath="$PROJECT_DIR$/conditionalandboolean/conditionalandboolean.iml" />
       <module fileurl="file://$PROJECT_DIR$/errorhandling/errorhandling.iml" filepath="$PROJECT_DIR$/errorhandling/errorhandling.iml" />
+      <module fileurl="file://$PROJECT_DIR$/filteroperators/filteroperators.iml" filepath="$PROJECT_DIR$/filteroperators/filteroperators.iml" />
       <module fileurl="file://$PROJECT_DIR$/mathandaggregateoperators/mathandaggregateoperators.iml" filepath="$PROJECT_DIR$/mathandaggregateoperators/mathandaggregateoperators.iml" />
       <module fileurl="file://$PROJECT_DIR$/observables/observables.iml" filepath="$PROJECT_DIR$/observables/observables.iml" />
       <module fileurl="file://$PROJECT_DIR$/subjects/subjects.iml" filepath="$PROJECT_DIR$/subjects/subjects.iml" />
