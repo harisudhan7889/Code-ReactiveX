@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
+import com.hari.subjects.publishsubject.PublishSubjectActivity
 import kotlinx.android.synthetic.main.view_subjects.*
 
 /**
@@ -33,6 +34,13 @@ class SubjectsActivity: AppCompatActivity(), View.OnClickListener {
         observableWithRefCountTimer.setOnClickListener(this)
         observableWithAutoConnect.setOnClickListener(this)
         autoConnectWithNoOfObservers.setOnClickListener(this)
+        simplePublishSubject.setOnClickListener(this)
+        publishSubject.setOnClickListener(this)
+        simpleBehaviorSubject.setOnClickListener(this)
+        simpleReplaySubject.setOnClickListener(this)
+        simpleAsyncSubject.setOnClickListener(this)
+        simpleUnicastSubject.setOnClickListener(this)
+        simpleSingleSubject.setOnClickListener(this)
     }
 
     override fun onClick(v: View) {
@@ -60,6 +68,27 @@ class SubjectsActivity: AppCompatActivity(), View.OnClickListener {
             }
             autoConnectWithNoOfObservers -> {
                 presenter.observableWithAutoConnectObservers()
+            }
+            simplePublishSubject -> {
+                presenter.simplePublishSubject()
+            }
+            simpleBehaviorSubject -> {
+                presenter.simpleBehviorSubject()
+            }
+            simpleReplaySubject -> {
+                presenter.simpleReplaySubject()
+            }
+            simpleAsyncSubject -> {
+                presenter.simpleAsyncSubject()
+            }
+            simpleUnicastSubject -> {
+                presenter.simpleUnicastSubject()
+            }
+            simpleSingleSubject -> {
+                presenter.simpleSingleSubject()
+            }
+            publishSubject -> {
+                startActivity(Intent(this, PublishSubjectActivity::class.java))
             }
         }
     }

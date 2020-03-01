@@ -1,7 +1,13 @@
 
 * [Subject](#subject)
-* [Cold Observable](#cold-observables)
-* [Hot Observable](#hot-observables)
+* [When to use subject?](#when-to-use-subject)
+* [Types of Subject](#types-of-subject)
+* [PublishSubject](#publishsubject)
+* [BehaviorSubject](#behaviorsubject)
+* [ReplaySubject](#replaysubject)
+* [AsyncSubject](#asyncsubject)
+* [UnicastSubject](#unicastsubject)
+* [SingleSubject](#singlesubject)
 * [Connectable Observable](#connectable-observable)
 * [refCount](#refcount)
 * [share](#share)
@@ -13,7 +19,8 @@
 implements Observer at the same time. Which means it acts as both Observable and Observer.
 
 * Subjects can multicast items to multiple subscribers. 
-Multicasting makes it possible to run expensive operations once and emit the results to multiple subscribers. This prevents doing duplicate operations for multiple subscribers.
+Multicasting makes it possible to run expensive operations once and emit the results to multiple subscribers. 
+This prevents doing duplicate operations for multiple subscribers.
 
 Will explain in detail about Subject. Let us see how Observers get subscribed to Observables
 without a Subject.
@@ -113,35 +120,90 @@ Observer2 Output 9
 Observer1 onComplete
 Observer2 onComplete
 ```
-  
 I hope everyone understand the concept of Subject. 
-Let us see the different types of subjects
 
-**PublishSubject**
+Above is the very basic example for you to understand the basic concept of subject. 
+So I have used `Observable.range()` to emit values. But in realtime subject will
+be used differently. Let us see when you can use subject in realtime with some realtime 
+examples.   
+  
+**Note**: Do learn the above part before entering the below sections.
 
+### When to use subject?
 
+To know the answer for this question, you should ask yourself the following questions.
+    
+1. What is the source of emission? (i.e) where do value coming from? or Who is calling onNext()?
+2. Do I need multicasting? 
 
-What is next? 
- 
-You have to know what is Cold and Hot Observable. 
-These topics are straightforward and you can easily understand.
+So let us see the my answers for these questions
 
-### Cold Observables
-* Observable that don’t emit items until a subscriber subscribes. 
-* It will generate the same sequence for every observer. 
-* It will start to emit from first for every observer.
-* Different observable source will be created for each observer.
+##### What is the source of emission? (i.e) where do value coming from? or Who is calling onNext()?
 
-[See Example](#without-subject)
+Source of emission can be classified in two kinds
 
-### Hot Observables 
-* Observables that don’t wait for any subscription. They start emitting items when created.
-* They don’t emit the sequence of items again for a new subscriber.
-* Depending on when observers subscribe, they may miss some of those emissions.
-* For example in Android, a click event can be represented as an observable. And it is only 
-logical for observers to receive only the events after they subscribed, 
-so the click observable has no need to cache them for replay.
-* Subject is by default Hot Observable.
+1. Hot  
+2. Cold 
+
+I would like to give you the known layman terms to understand the above two kinds.
+
+**My Understanding 1:**
+
+* <u>Hot</u>: Everyone might came across the word **Hot News**, which refers to the latest news or 
+news which are currently released at this point of time. So now I will modify this reference
+for our technical scenario. The source that emit latest event which is created at this point of time
+is called **hot source**.
+
+* <u>Cold</u>: News channels might telecast already existing news. So this can be modified for our technical
+scenario, the source that emits already existing items is called **cold source**.  
+
+**My Understanding 2:**
+
+* <u>Hot</u>: A source of notifications that you have to push yourself. 
+We must write code to push notifications (input).
+
+* <u>Cold</u>: A source of notifications that you do not have to generate yourself. 
+It could be any number of things eg: a timer callback, 
+just emitting values one by one or arrayvalues, asynchronous result of reading from a file or sending a web request.
+
+**My Understanding 3:**
+
+* <u>Hot</u>: From technical perspective all the events (for example let us take button click event) are hot. 
+The source that emits this event is called hot source. Because this event is created and emitted
+at this point of time.
+
+Note: Don't think of how the source will emit the events and get confused. We will go point by point.
+
+* <u>Cold</u>: Source that emit items already existed is called cold source following are the
+examples 
+
+     1. Source that emit known values or emit values from asynchronous calls for example just have a look at all 
+     [create observable operators](../basicoperators/README.md)
+     2. Lets take Observable.just(1, 2, 3), so in this case source emits already existed values 1, 2, 3.
+     3. Lets take the asynchronous network call (Retrofit + RxJava) that provides us the Observable source which emits the result.
+     
+**My Understanding 4:**
+
+* <u>Hot</u>: It don't wait for any subscription. They start emitting items when created. 
+Depending on when observers subscribe, they may miss some of those emissions. 
+    1. Once again I am comparing this with **Hot News** concept where the news will be telecasted even there is no observer are
+seeing. So this news might be missed by the observers who are joined lately. 
+
+    2. For example in Android, a click event is a notification which is emitted. And it is only 
+logical for observers to receive only the events after they subscribed.
+
+* <u>Cold</u>: Observable that don’t emit items until a subscriber subscribes. 
+It will generate the same sequence for every observer. It will start to emit from first for every observer.
+This is like repeatedly telecasting already existing news so that a new observer who joined lately 
+can also see the news from the first.
+
+          
+#### Do I need multicasting? 
+
+I hope every one read about multicasting in the above section while reading about subject. 
+Decide whether you need multicasting, If you really need multicasting then use subject.
+
+### Ways to create hot observable source
 
 We have two ways of creating hot observable as follow
 
@@ -149,10 +211,78 @@ We have two ways of creating hot observable as follow
 can create the hot observable from scratch. We have already discussed about subject in
 the above section. 
 
+    [See basic example for subject](#with-subject)
+
 2. **ConnectableObservable:** By using ConnectableObservable, we can only convert the cold observable into hot observable by using 
 its publish and connect methods and various variants like refCount, autoConnect and replay etc. 
 
-[See Example for Subject](#with-subject)
+### Types of Subject
+
+1. PublishSubject
+2. BehaviorSubject
+3. ReplaySubject
+4. AsyncSubject
+5. UnicastSubject
+6. SingleSubject
+
+### PublishSubject
+
+**Basic Example:** This is to understand the actual characteristic of PublishSubject
+
+```
+val publishSubject = PublishSubject.create<Int>()
+publishSubject.subscribe(observer1)
+publishSubject.onNext(1)
+publishSubject.onNext(2)
+publishSubject.onNext(3)
+publishSubject.subscribe(observer2)
+publishSubject.onNext(4)
+publishSubject.onNext(5)
+publishSubject.onComplete()
+```
+
+**Output**
+```
+Observer1 onSubscribe
+Observer1 Output 1
+Observer1 Output 2
+Observer1 Output 3
+Observer2 onSubscribe
+Observer1 Output 4
+Observer2 Output 4
+Observer1 Output 5
+Observer2 Output 5
+Observer1 onComplete
+Observer2 onComplete
+``` 
+
+**Code Analysis**
+
+1. I have created a PublishSubject and subscribing two observers namely `observer1` and `observer2`.
+2. But before subscribing `observer2` I am emitting/publishing few values and you can in the
+output that `observer1` catching those values.
+3. After subscribing the `observer2` you can notice in the output that `observer2` is getting
+newly emitted values but not already emitted values.
+4. This is the characteristic of PublishSubject.
+
+From the above basic example you would have understand how PublishSubject will work. 
+But this basic example is not enough to understand how this can be used in realtime. 
+In realtime A PublishableSubject is useful, for instance, in bypassing hardware events 
+like scroll positions, touch events, clicks, etc… so you can subscribe several observers 
+to them but you just want to listen out for newer events.
+
+
+### BehaviorSubject
+
+### ReplaySubject
+
+### AsyncSubject
+
+### UnicastSubject
+
+### SingleSubject
+
+
 
 ### Connectable Observable
 

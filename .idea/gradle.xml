@@ -19,6 +19,7 @@
             <option value="$PROJECT_DIR$/observables" />
             <option value="$PROJECT_DIR$/subjects" />
             <option value="$PROJECT_DIR$/transformoperators" />
+            <option value="$PROJECT_DIR$/utilityoperators" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

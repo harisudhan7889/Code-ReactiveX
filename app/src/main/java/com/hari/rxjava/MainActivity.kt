@@ -14,6 +14,7 @@ import com.hari.mathandaggreateoperators.MathAndAggregateActivity
 import com.hari.observables.ObservablesActivity
 import com.hari.subjects.SubjectsActivity
 import com.hari.transformoperators.TransformOperatorsActivity
+import com.hari.utilityoperators.UtilityOperatorActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
 /**
@@ -31,6 +32,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         mathOperator.setOnClickListener(this)
         filterOperator.setOnClickListener(this)
         conditionalOperator.setOnClickListener(this)
+        utilityOperator.setOnClickListener(this)
         errorHandler.setOnClickListener(this)
         subject.setOnClickListener(this)
     }
@@ -57,6 +59,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
             conditionalOperator -> {
                 startActivity(ConditionalOperatorActivity.getIntent(this))
+            }
+            utilityOperator -> {
+                startActivity(UtilityOperatorActivity.getIntent(this))
             }
             errorHandler -> {
                 startActivity(ErrorHandlerActivity.getIntent(this))

@@ -3,11 +3,13 @@ package com.hari.subjects
 import android.content.Context
 import io.reactivex.Observable
 import io.reactivex.Observer
+import io.reactivex.Single
+import io.reactivex.SingleObserver
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Function
 import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.ReplaySubject
+import io.reactivex.subjects.*
 import java.util.concurrent.TimeUnit
 
 /**
@@ -224,5 +226,98 @@ class SubjectsPresenter(private val context: Context) {
         println("Wait for another 3 seconds for observer2 to subscribe")
         Thread.sleep(3000)
         autoConnectObservable.subscribe(observer2)
+    }
+
+    fun simplePublishSubject() {
+        val publishSubject = PublishSubject.create<Int>()
+        publishSubject.subscribe(observer1)
+        publishSubject.onNext(1)
+        publishSubject.onNext(2)
+        publishSubject.onNext(3)
+        publishSubject.subscribe(observer2)
+        publishSubject.onNext(4)
+        publishSubject.onNext(5)
+        publishSubject.onComplete()
+    }
+
+    fun simpleBehviorSubject() {
+        val behaviorSubject = BehaviorSubject.create<Int>()
+        behaviorSubject.subscribe(observer1)
+        behaviorSubject.onNext(1)
+        behaviorSubject.onNext(2)
+        behaviorSubject.onNext(3)
+        behaviorSubject.subscribe(observer2)
+        behaviorSubject.onNext(4)
+        behaviorSubject.onNext(5)
+        behaviorSubject.onComplete()
+    }
+
+    fun simpleReplaySubject() {
+        val replaySubject = ReplaySubject.create<Int>()
+        replaySubject.subscribe(observer1)
+        replaySubject.onNext(1)
+        replaySubject.onNext(2)
+        replaySubject.onNext(3)
+        replaySubject.subscribe(observer2)
+        replaySubject.onNext(4)
+        replaySubject.onNext(5)
+        replaySubject.onComplete()
+    }
+
+    fun simpleAsyncSubject() {
+        val asyncSubject = AsyncSubject.create<Int>()
+        asyncSubject.subscribe(observer1)
+        asyncSubject.onNext(1)
+        asyncSubject.onNext(2)
+        asyncSubject.onNext(3)
+        asyncSubject.subscribe(observer2)
+        asyncSubject.onNext(4)
+        asyncSubject.onNext(5)
+        asyncSubject.onComplete()
+    }
+
+    fun simpleUnicastSubject() {
+        val unicastSubject = UnicastSubject.create<Int>()
+        unicastSubject.subscribe(observer1)
+        unicastSubject.onNext(1)
+        unicastSubject.onNext(2)
+        unicastSubject.onNext(3)
+        unicastSubject.subscribe(observer2)
+        unicastSubject.onNext(4)
+        unicastSubject.onNext(5)
+        unicastSubject.onComplete()
+    }
+
+    fun simpleSingleSubject() {
+        val single = Single.just(1)
+        val singleSubject = SingleSubject.create<Int>()
+        single.subscribe(singleSubject)
+        singleSubject.subscribe(object: SingleObserver<Int>{
+            override fun onSuccess(value: Int) {
+                println("Single Subject Observer1 onSuccess $value")
+            }
+
+            override fun onSubscribe(d: Disposable) {
+                println("Single Subject Observer1 onSubscribe")
+            }
+
+            override fun onError(e: Throwable) {
+                println("Single Subject Observer1 onError $e")
+            }
+        })
+
+        singleSubject.subscribe(object: SingleObserver<Int>{
+            override fun onSuccess(value: Int) {
+                println("Single Subject Observer2 onSuccess $value")
+            }
+
+            override fun onSubscribe(d: Disposable) {
+                println("Single Subject Observer2 onSubscribe")
+            }
+
+            override fun onError(e: Throwable) {
+                println("Single Subject Observer2 onError $e")
+            }
+        })
     }
 }

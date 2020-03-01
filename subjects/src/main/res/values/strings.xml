@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">subjects</string>
+    <string name="load_more">Click to load more restaurants</string>
+    <string name="load_error">Something went wrong</string>
+
+    <string name="restaurants_count">No of restaurants are %1$d </string>
+    <string name="loading_page_message">Page is loading…</string>
+    <string name="pull_to_refresh_message">Pull to refresh…</string>
+    <string name="loading_more_message">Loading more restaurants…</string>
 </resources>

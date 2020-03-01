@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+<android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
     <Button
             android:id="@+id/withoutSubject"
@@ -91,13 +94,98 @@
     <Button
             android:id="@+id/autoConnectWithNoOfObservers"
             android:layout_width="350dp"
-            android:layout_height="76dp"
+            android:layout_height="63dp"
             android:text="Observable With Auto Connect with Observers Count"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.475"
+            app:layout_constraintHorizontal_bias="0.483"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/observableWithAutoConnect"
-            app:layout_constraintVertical_bias="0.15" />
+            app:layout_constraintVertical_bias="0.066" />
+
+    <Button
+            android:id="@+id/simplePublishSubject"
+            android:layout_width="350dp"
+            android:layout_height="63dp"
+            android:text="Simple Publish Subject"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.483"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/autoConnectWithNoOfObservers"
+            app:layout_constraintVertical_bias="0.066" />
+
+    <Button
+            android:id="@+id/publishSubject"
+            android:layout_width="350dp"
+            android:layout_height="63dp"
+            android:text="Publish Subject"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.483"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/simplePublishSubject"
+            app:layout_constraintVertical_bias="0.066" />
+
+    <Button
+            android:id="@+id/simpleBehaviorSubject"
+            android:layout_width="350dp"
+            android:layout_height="63dp"
+            android:text="Simple Behavior Subject"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.483"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/publishSubject"
+            app:layout_constraintVertical_bias="0.066" />
+
+    <Button
+            android:id="@+id/simpleReplaySubject"
+            android:layout_width="350dp"
+            android:layout_height="63dp"
+            android:text="Simple Replay Subject"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.483"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/simpleBehaviorSubject"
+            app:layout_constraintVertical_bias="0.066" />
+
+    <Button
+            android:id="@+id/simpleAsyncSubject"
+            android:layout_width="350dp"
+            android:layout_height="63dp"
+            android:text="Simple Async Subject"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.483"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/simpleReplaySubject"
+            app:layout_constraintVertical_bias="0.066" />
+
+    <Button
+            android:id="@+id/simpleUnicastSubject"
+            android:layout_width="350dp"
+            android:layout_height="63dp"
+            android:text="Simple Unicast Subject"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.483"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/simpleAsyncSubject"
+            app:layout_constraintVertical_bias="0.066" />
+
+    <Button
+            android:id="@+id/simpleSingleSubject"
+            android:layout_width="350dp"
+            android:layout_height="63dp"
+            android:text="Simple Single Subject"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.483"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/simpleUnicastSubject"
+            app:layout_constraintVertical_bias="0.066" />
 
 </android.support.constraint.ConstraintLayout>
+</ScrollView>
