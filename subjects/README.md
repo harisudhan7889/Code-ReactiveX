@@ -227,6 +227,11 @@ its publish and connect methods and various variants like refCount, autoConnect 
 
 ### PublishSubject
 
+PublishSubject emits all the items and at that time if any of the consumer is already subscribed then they will get all emitted data. 
+If any consumer subscribes later might miss out some or all emissions.
+
+Let us have a look at the basic example.
+
 **Basic Example:** This is to understand the actual characteristic of PublishSubject
 
 ```
@@ -259,7 +264,7 @@ Observer2 onComplete
 **Code Analysis**
 
 1. I have created a PublishSubject and subscribing two observers namely `observer1` and `observer2`.
-2. But before subscribing `observer2` I am emitting/publishing few values and you can in the
+2. But before subscribing `observer2` I am emitting/publishing few values and you can see in the
 output that `observer1` catching those values.
 3. After subscribing the `observer2` you can notice in the output that `observer2` is getting
 newly emitted values but not already emitted values.
@@ -267,13 +272,135 @@ newly emitted values but not already emitted values.
 
 From the above basic example you would have understand how PublishSubject will work. 
 But this basic example is not enough to understand how this can be used in realtime. 
-In realtime A PublishableSubject is useful, for instance, in bypassing hardware events 
-like scroll positions, touch events, clicks, etc… so you can subscribe several observers 
-to them but you just want to listen out for newer events.
+In realtime A PublishableSubject is useful, for instance, touch events, clicks, etc… 
+so you can subscribe several observers to them but you just want to listen out for newer events.
 
+**Real Time Example 1**
 
+In this example I am going to list the restaurants in a location and simultaneously will also update
+the restaurants count in the CustomToolbar. It is quite common to have different pieces of your application that need to 
+react or get updated when something occurs somewhere within your UI or application. 
+Hope this example will gives you how PublishSubject can be used in a real time.
+
+**Code Analysis**
+
+1. I have created a generic open class named `PublishSubjectState` that is the place where
+`PublishSubject` is created, observed and events are published. 
+2. My usecase here is to list the restaurants, so I have created an another class called
+`LoadRestaurantState` which will simply extend `PublishSubjectState` but instead of generic type,
+you can see I have used `Restaurants` as the type.
+3. In the Application class `SubjectApplication`, I have initialized  `LoadRestaurantState` so it
+can be used anywhere inside this `SubjectApplication`. It will be initialized only once and can be used
+globally.
+4. I have a created a activity named `RestaurantsActivity` that lists the restaurants in a particular location and 
+also created a CustomToolbar(Displays count of restaurants) within this activity.
+5. So I have to update two views simultaneously that expects the same input to update view.
+6. Which means, in the list screen I have to use restaurants list data to display restaurants and the same 
+restaurants list data needed to calculate the count of the restaurants which should be displayed in the toolbar.
+7. So now listening for the input should be happened in two places.   
+8. Just have a look at `RestaurantsActivity` and `CustomRestaurantToolbar` where I have used `LoadRestaurantState`
+and observing for the input.
+9. In `RestaurantsActivity` I have called `RestaurantsPresenter.loadRestaurantsForFirsTime(lat, lon)` (API call) to retrieve
+the restaurants in the provided latitude and longitude.
+10. Once the API call gets the response, using `LoadRestaurantState.publish(response)` the result will be published.
+11. The published result will be available for the views (list and customtoolbar) those were observing for the input to update the views. 
+12. Once you have understand this example you will know how `PublishSubject` works in realtime. For simplicity I have used only
+two views those were observing to the `PublishSubject` that is initialized at the `Application` class. 
+  
+**Real Time Example 2**  
+
+This is a example where `PublishSubject` is used for transferring data between Activities. 
+Usually we would use `Intent` for transferring data between Android components (In our case it is Activities). 
+Basic types like String, Int.. can be transferred easily but user defined model should be serializable or parcelable so that it
+can be transferred. But it some limitations, if the content is too large or any of the nested user model inside is not of serializable type then
+data will be missed when you get the data. To avoid these kind of scenarios we can use Subject like I have done in this example.
+
+**Code Analysis**
+ 1. I have created Object class type in kotlin `RxPublishSubjectBus.kt` where methods for publishing data and observing the
+ result using `PublishSubject` is coded. 
+ 2. `RxPublishSubjectBus.kt` is generic.
+ 3. There are two Activities `PublishSubjectActivityOne` and `PublishSubjectActivityTwo`. 
+ 4. `PublishSubjectActivityOne` will have code for observing (using `RxPublishSubjectBus`) the sent result from `PublishSubjectActivityTwo`.
+ 5. From `PublishSubjectActivityOne` when user clicks a button, second Activity named `PublishSubjectActivityTwo`
+ will be called.
+ 6. In `PublishSubjectActivityTwo` user can type any text in a edittext and this 
+ text will be published using `RxPublishSubjectBus` when button click is happened.
+ 7. Once the data is published, `PublishSubjectActivityTwo` will be destroyed using finish() method.
+ 8. So now `PublishSubjectActivityOne` will be visible and though this activity is already listening for
+ the result, it will be receiving the data that we sent from `PublishSubjectActivityTwo`
+ 9. Hope you all understand how the code flows, Just have a look at the code you will be understanding clearly.
+ 10. Once you understand this example, you might have doubt whether it is possible to transfer data from `PublishSubjectActivityOne` 
+ to `PublishSubjectActivityTwo` using `PublishSubject`. No you can't because `PublishSubject` can receive data 
+ only if it is already subscribed before the data is published. 
+ So in our scenario before starting the `PublishSubjectActivityTwo` the data will be published and only in `onCreate()` of 
+ `PublishSubjectActivityTwo` subscription for listening the data will done.
+ 11. So how can we achieve this? Yes we can achieve this if we use `BehaviorSubject` instead of `PublishSubject`. 
+   
 ### BehaviorSubject
 
+BehaviorSubject emits the most recent item at the time of their subscription and all items after that. 
+Let us see the basic example.
+
+**Basic Example:**
+
+```
+val behaviorSubject = BehaviorSubject.create<Int>()
+behaviorSubject.subscribe(observer1)
+behaviorSubject.onNext(1)
+behaviorSubject.onNext(2)
+behaviorSubject.onNext(3)
+behaviorSubject.subscribe(observer2)
+behaviorSubject.onNext(4)
+behaviorSubject.onNext(5)
+behaviorSubject.onComplete()
+```
+
+**Output**
+```
+Observer 1 onSubscribe
+Observer 1 onNext: 0
+Observer 1 onNext: 1
+Observer 1 onNext: 2
+Observer 1 onNext: 3
+Observer 2 onSubscribe
+Observer 2 onNext: 3
+Observer 1 onNext: 4
+Observer 2 onNext: 4
+Observer 1 onNext: 5
+Observer 2 onNext: 5
+Observer 1 onComplete
+Observer 2 onComplete
+```
+
+**Code Analysis**
+
+1. I have created a BehaviorSubject and subscribing two observers namely `observer1` and `observer2`.
+2. But before subscribing `observer2` I am emitting/publishing few values and you can see in the
+output that `observer1` catching those values.
+3. After subscribing the `observer2` you can notice in the output that `observer2` is getting
+last recent value emitted and other newly emitted values.
+4. This is the characteristic of BehaviorSubject.
+
+**Real Time Example**
+
+We are going to use the Real Time Example 2 of `PublishSubject`. So instead of `PublishSubject` I am going to
+use `BehaviourSubject`. In this example user can type any text in the editor from Activity1 and when button click happens 
+the entry text data will be sent from Activity 1 to Activity 2 using `BehaviorSubject`.
+
+**Code Analysis**
+ 1. I have created Object class type in kotlin `RxBehaviorSubjectBus.kt` where methods for publishing data and observing the
+ result using `BehaviorSubject` is coded. 
+ 2. `RxBehaviorSubjectBus.kt` is generic.
+ 3. There are two Activities `BehaviorSubjectActivityOne` and `BehaviorSubjectActivityTwo`. 
+ 4. `BehaviorSubjectActivityOne` will have code for publishing the data.
+ 4. `BehaviorSubjectActivityTwo` will have code for observing (using `RxBehaviorSubjectBus`) the sent result from `BehaviorSubjectActivityOne`.
+ 5. From `BehaviorSubjectActivityOne` when user types the text in the editor and clicks a button, the entered text will be published using `BehaviorSubject` 
+ and the second Activity named `BehaviorSubjectActivityTwo` will be called.
+ 6. So when `BehaviorSubjectActivityTwo` is created in `onCreate()` method I have added the code that subscribes to the publisher.
+ 7. Once `BehaviorSubjectActivityTwo` subscribes to the publisher `BehaviorSubject`, 
+ the latest published user entry data will be available to this second activity.
+ 8. Hope you all understand how the code flows, Just have a look at the code you will be understanding clearly.
+ 
 ### ReplaySubject
 
 ### AsyncSubject

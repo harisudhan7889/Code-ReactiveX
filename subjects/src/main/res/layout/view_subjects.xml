@@ -116,15 +116,27 @@
             app:layout_constraintVertical_bias="0.066" />
 
     <Button
-            android:id="@+id/publishSubject"
+            android:id="@+id/publishSubject1"
             android:layout_width="350dp"
             android:layout_height="63dp"
-            android:text="Publish Subject"
+            android:text="Publish Subject Sample 1"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.483"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/simplePublishSubject"
+            app:layout_constraintVertical_bias="0.066" />
+
+    <Button
+            android:id="@+id/publishSubject2"
+            android:layout_width="350dp"
+            android:layout_height="63dp"
+            android:text="Publish Subject Sample 2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.483"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/publishSubject1"
             app:layout_constraintVertical_bias="0.066" />
 
     <Button
@@ -136,7 +148,19 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.483"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/publishSubject"
+            app:layout_constraintTop_toBottomOf="@+id/publishSubject2"
+            app:layout_constraintVertical_bias="0.066" />
+
+    <Button
+            android:id="@+id/behaviorSubject1"
+            android:layout_width="350dp"
+            android:layout_height="63dp"
+            android:text="Behavior Subject 1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.483"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/simpleBehaviorSubject"
             app:layout_constraintVertical_bias="0.066" />
 
     <Button
@@ -148,7 +172,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.483"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/simpleBehaviorSubject"
+            app:layout_constraintTop_toBottomOf="@+id/behaviorSubject1"
             app:layout_constraintVertical_bias="0.066" />
 
     <Button

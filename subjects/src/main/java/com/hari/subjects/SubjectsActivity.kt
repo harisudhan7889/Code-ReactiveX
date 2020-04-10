@@ -5,7 +5,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
-import com.hari.subjects.publishsubject.PublishSubjectActivity
+import com.hari.subjects.behavioursubject.realtimesample1.BehaviorSubjectActivityOne
+import com.hari.subjects.publishsubject.realtimesample1.RestaurantsActivity
+import com.hari.subjects.publishsubject.realtimesample2.PublishSubjectActivityOne
 import kotlinx.android.synthetic.main.view_subjects.*
 
 /**
@@ -35,8 +37,10 @@ class SubjectsActivity: AppCompatActivity(), View.OnClickListener {
         observableWithAutoConnect.setOnClickListener(this)
         autoConnectWithNoOfObservers.setOnClickListener(this)
         simplePublishSubject.setOnClickListener(this)
-        publishSubject.setOnClickListener(this)
+        publishSubject1.setOnClickListener(this)
+        publishSubject2.setOnClickListener(this)
         simpleBehaviorSubject.setOnClickListener(this)
+        behaviorSubject1.setOnClickListener(this)
         simpleReplaySubject.setOnClickListener(this)
         simpleAsyncSubject.setOnClickListener(this)
         simpleUnicastSubject.setOnClickListener(this)
@@ -73,7 +77,7 @@ class SubjectsActivity: AppCompatActivity(), View.OnClickListener {
                 presenter.simplePublishSubject()
             }
             simpleBehaviorSubject -> {
-                presenter.simpleBehviorSubject()
+                presenter.simpleBehaviorSubject()
             }
             simpleReplaySubject -> {
                 presenter.simpleReplaySubject()
@@ -87,8 +91,14 @@ class SubjectsActivity: AppCompatActivity(), View.OnClickListener {
             simpleSingleSubject -> {
                 presenter.simpleSingleSubject()
             }
-            publishSubject -> {
-                startActivity(Intent(this, PublishSubjectActivity::class.java))
+            publishSubject1 -> {
+                startActivity(Intent(this, RestaurantsActivity::class.java))
+            }
+            publishSubject2 -> {
+                startActivity(Intent(this, PublishSubjectActivityOne::class.java))
+            }
+            behaviorSubject1 -> {
+                startActivity(Intent(this, BehaviorSubjectActivityOne::class.java))
             }
         }
     }

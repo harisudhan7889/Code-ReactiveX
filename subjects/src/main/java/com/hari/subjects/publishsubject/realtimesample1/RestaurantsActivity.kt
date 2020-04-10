@@ -1,4 +1,4 @@
-package com.hari.subjects.publishsubject
+package com.hari.subjects.publishsubject.realtimesample1
 
 import android.app.ProgressDialog
 import android.os.Bundle
@@ -6,34 +6,31 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import com.hari.api.model.Restaurants
 import com.hari.subjects.R
+import com.hari.subjects.SubjectApplication
 import com.hari.subjects.common.Listener
 import com.hari.subjects.common.RestaurantAdapter
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.view_publish_subject.*
 
 /**
  * @author Hari Hara Sudhan.N
  */
-class PublishSubjectActivity : AppCompatActivity(), Listener {
+class RestaurantsActivity : AppCompatActivity(), Listener {
 
-    private var compositeDisposable: CompositeDisposable? = null
     private var adapter: RestaurantAdapter? = null
+    private var disposable: Disposable? = null
 
     private val progressBar by lazy {
         ProgressDialog(this)
     }
 
     private val presenter by lazy {
-        PublishSubjectPresenter()
+        RestaurantsPresenter()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.view_publish_subject)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        title = "Publish Subject"
         val layoutManager = GridLayoutManager(this, 2)
         recyclerView.layoutManager = layoutManager
         adapter = RestaurantAdapter(this)
@@ -64,15 +61,13 @@ class PublishSubjectActivity : AppCompatActivity(), Listener {
     }
 
     private fun bind() {
-        compositeDisposable = CompositeDisposable()
-        compositeDisposable!!.add(presenter.getRestaurants()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
-                updateUIWithRestaurants(it)
-                progressBar.dismiss()
-                refreshContainer.isRefreshing = false
-            })
+        setSupportActionBar(toolBar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        disposable = (application as SubjectApplication).retrieveLoadRestaurantState().observe().subscribe {
+            updateUIWithRestaurants(it)
+            progressBar.dismiss()
+            refreshContainer.isRefreshing = false
+        }
     }
 
     private fun updateUIWithRestaurants(restaurants: Restaurants?) {
@@ -81,6 +76,8 @@ class PublishSubjectActivity : AppCompatActivity(), Listener {
     }
 
     private fun unbind() {
-        compositeDisposable?.clear()
+        if (disposable?.isDisposed == false) {
+            disposable?.dispose()
+        }
     }
 }

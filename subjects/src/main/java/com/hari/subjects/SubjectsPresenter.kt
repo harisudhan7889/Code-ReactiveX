@@ -240,7 +240,7 @@ class SubjectsPresenter(private val context: Context) {
         publishSubject.onComplete()
     }
 
-    fun simpleBehviorSubject() {
+    fun simpleBehaviorSubject() {
         val behaviorSubject = BehaviorSubject.create<Int>()
         behaviorSubject.subscribe(observer1)
         behaviorSubject.onNext(1)
