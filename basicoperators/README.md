@@ -1,4 +1,4 @@
-## Basic Operators:
+## Create Operators:
 Through these operators we can create a observable. 
 
 * [create](#create-operator)
@@ -35,6 +35,9 @@ Through these operators we can create a observable.
                   }
               })
   ```  
+  
+  **Analysis**
+  
   If you see the above code snippet you can notice that **onNext, onComplete and onError** are called based on your functionality need.
   This Observable starts getting executed as soon as a Observer subscribes to it like below.
   ```
@@ -54,10 +57,10 @@ Through these operators we can create a observable.
 
 This is the simple way to create a Observable. 
 Whatever data type object you give as an input to `just()`, 
-it will returns the observable of that type in a single emission
-(single emission means onNext() will be called only once).
+it will returns the observable of that type. Based on the no of inputs, 
+no of time emission will happen.
 
-**Syntax:**
+**Example 1:**
 ```
 Observable.just(new String[]{"A", "B", "C", "D", "E", "F"})
                 .subscribe(new Observer<String[]>() {
@@ -88,6 +91,55 @@ onSubscribe
 onNext: ABCDEF
 onComplete
 ```
+**Analysis**
+In the above code I am giving a string array as a input, So `just` operator converts the string array 
+into Observable<String Array> and you can see the entire string array gets printed in the output.
+
+**Example 2**
+
+```
+Observable.just("A", "B", "C", "D", "E", "F")
+                .subscribe(new Observer<String[]>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        System.out.println("onSubscribe");
+                    }
+
+                    @Override
+                    public void onNext(String string) {
+                        System.out.println("onNext: " + string);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        System.out.println("onError $e");
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        System.out.println("onComplete");
+                    }
+                });
+```
+
+**Output**
+```
+onSubscribe
+onNext: A
+onNext: B
+onNext: C
+onNext: D
+onNext: E
+onNext: F
+onComplete
+```
+
+**Analysis**
+
+In the second example I am providing multiple strings as input for `just` operator.
+And you can see in the output that `onNext` method of the observer is called based on
+number of inputs provided.
+
 **Actual Definition:** The Just operator converts an item into an Observable that emits that item.
 
 ### defer Operator 

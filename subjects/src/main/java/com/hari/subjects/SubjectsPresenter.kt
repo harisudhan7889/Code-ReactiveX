@@ -49,7 +49,7 @@ class SubjectsPresenter(private val context: Context) {
         }
 
         override fun onError(e: Throwable) {
-            println("Observer2 onError")
+            println("Observer2 onError $e")
         }
     }
 

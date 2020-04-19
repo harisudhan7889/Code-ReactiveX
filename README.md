@@ -52,7 +52,7 @@ It enables us to do complex things very simple. It provides us the power.
 RxJava is a JVM implementation of ReactiveX. Let see all about RxJava and its Operators
 
 1. [Schedulers](schedulers/README.md)
-2. [Basic Operators](basicoperators/README.md)
+2. [Create Operators](basicoperators/README.md)
 3. [Observable and Observer Types](observables/README.md)
 4. [Transform Operators](transformoperators/README.md)
 5. [Combining Operators](combineoperators/README.md)
@@ -61,3 +61,18 @@ RxJava is a JVM implementation of ReactiveX. Let see all about RxJava and its Op
 8. [Conditional and Boolean Operator](conditionalandboolean/README.md)
 9. [Error Handling](errorhandling/README.md)
 10. [Subjects](subjects/README.md)
+
+## API Keys
+
+You have to add two API keys in your `local.properties` file  to work with examples that I have used here
+
+1. **Zomato API Key** - https://developers.zomato.com/documentation
+2. **Rest Countries API from rapidapi.com :** 
+https://rapidapi.com/apilayernet/api/rest-countries-v1 
+Sign up in this site to get the api key.  
+3. After getting these API keys, add these keys in your `local.properties` file like below
+
+```
+zomato_api_key = "The API Key that you have got from the above step"
+country_api_key = "The API Key that you have got from the above step" 
+```

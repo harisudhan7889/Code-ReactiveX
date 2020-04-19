@@ -358,7 +358,6 @@ behaviorSubject.onComplete()
 **Output**
 ```
 Observer 1 onSubscribe
-Observer 1 onNext: 0
 Observer 1 onNext: 1
 Observer 1 onNext: 2
 Observer 1 onNext: 3
@@ -403,13 +402,182 @@ the entry text data will be sent from Activity 1 to Activity 2 using `BehaviorSu
  
 ### ReplaySubject
 
+Subject will record the values emitted 
+and will push all the emitted values to the observer when the observer is subscribed.
+
+**Basic Example**
+
+```
+val replaySubject = ReplaySubject.create<Int>()
+replaySubject.subscribe(observer1)
+replaySubject.onNext(1)
+replaySubject.onNext(2)
+replaySubject.onNext(3)
+replaySubject.subscribe(observer2)
+replaySubject.onNext(4)
+replaySubject.onNext(5)
+replaySubject.onComplete()
+```
+
+**Output**
+
+```
+Observer 1 onSubscribe
+Observer 1 onNext: 1
+Observer 1 onNext: 2
+Observer 1 onNext: 3
+Observer 2 onSubscribe
+Observer 2 onNext: 1
+Observer 2 onNext: 2
+Observer 2 onNext: 3
+Observer 1 onNext: 4
+Observer 2 onNext: 4
+Observer 1 onNext: 5
+Observer 2 onNext: 5
+Observer 1 onComplete
+Observer 2 onComplete
+```
+
+**Code Analysis**
+
+1. I have created a `ReplaySubject` and subscribing two observers namely `observer1` and `observer2`.
+2. But before subscribing `observer2` I am emitting/publishing few values and you can see in the
+output that `observer1` catching those values.
+3. After subscribing the `observer2` you can notice in the output that `observer2` is also getting all the values.
+4. Which means `ReplaySubject` is replying all the values for newly subscribed consumers too.
+5. This is the characteristic of `ReplaySubject`.
+
+
 ### AsyncSubject
+
+AsyncSubject emits only the last value of the 
+Observable and this only happens after the Observable completes. 
+
+**Basic Example**
+
+```
+val asyncSubject = AsyncSubject.create<Int>()
+asyncSubject.subscribe(observer1)
+asyncSubject.onNext(1)
+asyncSubject.onNext(2)
+asyncSubject.onNext(3)
+asyncSubject.subscribe(observer2)
+asyncSubject.onNext(4)
+asyncSubject.onNext(5)
+asyncSubject.onComplete()
+```
+
+**Output**
+```
+Observer 1 onSubscribe
+Observer 2 onSubscribe
+Observer 1 onNext: 5
+Observer 1 onComplete
+Observer 2 onNext: 5
+Observer 2 onComplete
+```
+
+**Code Analysis**
+
+1. I have created a `AsyncSubject` and subscribing two observers namely `observer1` and `observer2`.
+2. But before subscribing `observer2` I am emitting/publishing few values.
+3. Even though after 2 observers subscribed you can see no values are caught at the observers end .
+4. Which means only when you call AsyncSubject's onComplete() like `asyncSubject.onComplete()` 
+the last value will be emitted to all the subscribed observers.    
+5. This is the characteristic of `AsyncSubject`.
 
 ### UnicastSubject
 
+UnicastSubject allows only a single subscriber and it 
+emits all the items regardless of the time of subscription.
+
+**Basic Example**
+
+```
+val unicastSubject = UnicastSubject.create<Int>()
+unicastSubject.subscribe(observer1)
+unicastSubject.onNext(1)
+unicastSubject.onNext(2)
+unicastSubject.onNext(3)
+unicastSubject.subscribe(observer2)
+unicastSubject.onNext(4)
+unicastSubject.onNext(5)
+unicastSubject.onComplete()
+```
+
+**Output**
+
+```
+Observer1 1
+Observer1 2
+Observer1 3
+Observer2 onSubscribe
+Observer2 onError java.lang.IllegalStateException: Only a single observer allowed.
+Observer1 4
+Observer1 5
+Observer1 onComplete
+```
+
+**Code Analysis**
+
+1. The same example format I have used for `UnicastSubject` also.
+2. If you see the output you will notice a error. This is because I have tried subscribing multiple observers
+but `UnicastSubject` will support only one observer to subscribe at a time.
+
+
 ### SingleSubject
 
+```
+val single = Single.just(1)
+val singleSubject = SingleSubject.create<Int>()
+single.subscribe(singleSubject)
+singleSubject.subscribe(object: SingleObserver<Int>{
+            override fun onSuccess(value: Int) {
+                println("Single Subject Observer1 onSuccess $value")
+            }
 
+            override fun onSubscribe(d: Disposable) {
+                println("Single Subject Observer1 onSubscribe")
+            }
+
+            override fun onError(e: Throwable) {
+                println("Single Subject Observer1 onError $e")
+            }
+        })
+
+singleSubject.subscribe(object: SingleObserver<Int>{
+            override fun onSuccess(value: Int) {
+                println("Single Subject Observer2 onSuccess $value")
+            }
+
+            override fun onSubscribe(d: Disposable) {
+                println("Single Subject Observer2 onSubscribe")
+            }
+
+            override fun onError(e: Throwable) {
+                println("Single Subject Observer2 onError $e")
+            }
+        })
+```
+
+**Output**
+
+```
+Single Subject Observer1 onSubscribe
+Single Subject Observer1 onSuccess 1
+Single Subject Observer2 onSubscribe
+Single Subject Observer2 onSuccess 1
+```
+
+**Analysis**
+
+1. SingleSubject is meant for handling single value.
+2. You can see in the code that I am using `Single.just(1)` that emits only single value.
+3. And in place of simple observer I have used `SingleObserver` which have only three methods namely
+**onSubscribe, onSuccess and OnError**. 
+4. This subject can be used if you know that the response will be single value instead of an array. 
+If you have learned [Single observable](../observables/README.md) type then you can easily understand this concept. 
+5. From the output you can understand how this subject works. 
 
 ### Connectable Observable
 
